@@ -75,12 +75,14 @@ export default {
 			backgroundImage: {
 				'gradient-primary': 'var(--gradient-primary)',
 				'gradient-civic': 'var(--gradient-civic)',
-				'gradient-trust': 'var(--gradient-trust)'
+				'gradient-trust': 'var(--gradient-trust)',
+				'gradient-ethereum': 'var(--gradient-ethereum)'
 			},
 			boxShadow: {
 				'civic': 'var(--shadow-civic)',
 				'trust': 'var(--shadow-trust)',
-				'vote': 'var(--shadow-vote)'
+				'vote': 'var(--shadow-vote)',
+				'ethereum': 'var(--shadow-ethereum)'
 			},
 			transitionTimingFunction: {
 				'civic': 'var(--transition-civic)'

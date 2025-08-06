@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +6,8 @@ import { CivicHeader } from "@/components/CivicHeader";
 import { VotingCard } from "@/components/VotingCard";
 import { EngagementHub } from "@/components/EngagementHub";
 import { VoteVerification } from "@/components/VoteVerification";
+import { AuthDialog } from "@/components/AuthDialog";
+import { AdminPanel } from "@/components/AdminPanel";
 import { 
   Vote, 
   Shield, 
@@ -15,14 +17,17 @@ import {
   CheckCircle,
   ArrowRight,
   Smartphone,
-  Lock
+  Lock,
+  Crown,
+  Activity,
+  Zap
 } from "lucide-react";
 import civicHeroImage from "@/assets/civic-hero.jpg";
 
-const mockUser = {
-  name: "Sarah Mbeki",
-  verified: true
-};
+interface User {
+  username: string;
+  isAdmin: boolean;
+}
 
 const mockVotingData = {
   title: "Community Budget Allocation 2024",
@@ -56,10 +61,63 @@ const mockVotingData = {
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [user, setUser] = useState<User | null>(null);
+  const [authDialogOpen, setAuthDialogOpen] = useState(false);
+  const [agendas, setAgendas] = useState([]);
+
+  useEffect(() => {
+    // Check if user is logged in
+    const storedUser = localStorage.getItem("civiclink_user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    } else {
+      setAuthDialogOpen(true);
+    }
+
+    // Load agendas
+    const storedAgendas = localStorage.getItem("civiclink_agendas");
+    if (storedAgendas) {
+      setAgendas(JSON.parse(storedAgendas));
+    } else {
+      // Set default agenda if none exists
+      setAgendas([mockVotingData]);
+    }
+  }, []);
+
+  const handleAuthSuccess = (userData: User) => {
+    setUser(userData);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("civiclink_user");
+    setUser(null);
+    setAuthDialogOpen(true);
+  };
+
+  if (!user) {
+    return (
+      <>
+        <div className="min-h-screen bg-gradient-trust flex items-center justify-center">
+          <div className="text-center space-y-4">
+            <div className="w-20 h-20 bg-gradient-ethereum rounded-full flex items-center justify-center mx-auto animate-pulse">
+              <Shield className="w-10 h-10 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold">Welcome to CivicLink</h1>
+            <p className="text-muted-foreground">Connecting to secure authentication...</p>
+          </div>
+        </div>
+        <AuthDialog 
+          open={authDialogOpen} 
+          onOpenChange={setAuthDialogOpen}
+          onAuthSuccess={handleAuthSuccess}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-trust">
-      <CivicHeader user={mockUser} notifications={3} />
+      <CivicHeader user={user} notifications={3} onLogout={handleLogout} />
       
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Hero Section */}
@@ -79,9 +137,9 @@ const Index = () => {
                 Power to Every Voice
               </h1>
               <p className="text-xl text-primary-foreground/90">
-                Secure, transparent, and accessible blockchain voting. 
-                Participate in democracy from anywhere, verify your vote, 
-                and help shape your community's future.
+                Secure blockchain voting powered by our partnership with Ethereum. 
+                Participate in democracy from anywhere, verify your vote on-chain, 
+                and help shape your community's future with crypto-verified transparency.
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -103,12 +161,12 @@ const Index = () => {
         <section className="grid md:grid-cols-3 gap-6">
           <Card className="text-center bg-gradient-trust shadow-civic hover:shadow-trust transition-all duration-300 animate-fade-in-up">
             <CardHeader>
-              <div className="w-12 h-12 bg-gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-ethereum rounded-full flex items-center justify-center mx-auto mb-4">
+                <Zap className="w-6 h-6 text-white" />
               </div>
-              <CardTitle>Blockchain Security</CardTitle>
+              <CardTitle>Ethereum-Powered Security</CardTitle>
               <CardDescription>
-                Every vote is cryptographically secured and permanently recorded on an immutable blockchain
+                Every vote is secured by Ethereum's immutable blockchain with gas-free transactions for voters
               </CardDescription>
             </CardHeader>
           </Card>
@@ -116,11 +174,11 @@ const Index = () => {
           <Card className="text-center bg-gradient-trust shadow-civic hover:shadow-trust transition-all duration-300 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
             <CardHeader>
               <div className="w-12 h-12 bg-gradient-civic rounded-full flex items-center justify-center mx-auto mb-4">
-                <Smartphone className="w-6 h-6 text-white" />
+                <Activity className="w-6 h-6 text-white" />
               </div>
-              <CardTitle>Accessible Anywhere</CardTitle>
+              <CardTitle>Real-Time Verification</CardTitle>
               <CardDescription>
-                Vote from your phone, tablet, or computer. Support for multiple languages and accessibility features
+                Track your vote live on Ethereum blockchain with instant transaction confirmations
               </CardDescription>
             </CardHeader>
           </Card>
@@ -141,7 +199,7 @@ const Index = () => {
         {/* Main Dashboard */}
         <section>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-white/50 backdrop-blur-sm">
+            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-5' : 'grid-cols-4'} bg-white/50 backdrop-blur-sm`}>
               <TabsTrigger value="dashboard" className="gap-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -158,12 +216,20 @@ const Index = () => {
                 <Shield className="w-4 h-4" />
                 <span className="hidden sm:inline">Verify</span>
               </TabsTrigger>
+              {user.isAdmin && (
+                <TabsTrigger value="admin" className="gap-2">
+                  <Crown className="w-4 h-4" />
+                  <span className="hidden sm:inline">Admin</span>
+                </TabsTrigger>
+              )}
             </TabsList>
 
             <TabsContent value="dashboard" className="space-y-6">
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold">Welcome back, {mockUser.name}!</h2>
-                <p className="text-muted-foreground">Here's what's happening in your community</p>
+                <h2 className="text-2xl font-bold">Welcome back, {user.username}!</h2>
+                <p className="text-muted-foreground">
+                  {user.isAdmin ? "Administrative overview of the platform" : "Here's what's happening in your community"}
+                </p>
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -193,17 +259,39 @@ const Index = () => {
                 </Card>
               </div>
 
-              <VotingCard
-                {...mockVotingData}
-                onVote={(optionId) => console.log("Voted for:", optionId)}
-              />
+              {agendas.length > 0 ? (
+                <VotingCard
+                  {...(agendas.find((a: any) => a.active) || agendas[0])}
+                  onVote={(optionId) => console.log("Voted for:", optionId)}
+                />
+              ) : (
+                <Card className="text-center p-8">
+                  <p className="text-muted-foreground">No active voting agendas available</p>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="vote">
-              <VotingCard
-                {...mockVotingData}
-                onVote={(optionId) => console.log("Voted for:", optionId)}
-              />
+              {agendas.length > 0 ? (
+                <div className="space-y-6">
+                  {agendas.filter((a: any) => a.active).map((agenda: any) => (
+                    <VotingCard
+                      key={agenda.id}
+                      {...agenda}
+                      onVote={(optionId) => console.log("Voted for:", optionId)}
+                    />
+                  ))}
+                  {agendas.filter((a: any) => a.active).length === 0 && (
+                    <Card className="text-center p-8">
+                      <p className="text-muted-foreground">No active votes at this time</p>
+                    </Card>
+                  )}
+                </div>
+              ) : (
+                <Card className="text-center p-8">
+                  <p className="text-muted-foreground">No voting agendas available</p>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="engage">
@@ -213,6 +301,12 @@ const Index = () => {
             <TabsContent value="verify">
               <VoteVerification />
             </TabsContent>
+
+            {user.isAdmin && (
+              <TabsContent value="admin">
+                <AdminPanel />
+              </TabsContent>
+            )}
           </Tabs>
         </section>
       </main>
