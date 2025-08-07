@@ -29,41 +29,194 @@ interface User {
   isAdmin: boolean;
 }
 
-const mockVotingData = {
-  title: "Community Budget Allocation 2024",
-  description: "Decide how to allocate R50,000 for Ward 23 community improvements. Your voice matters in shaping our neighborhood's future.",
-  options: [
-    {
-      id: "sanitation",
-      title: "Sanitation Infrastructure",
-      description: "Improve toilet facilities and waste management",
-      icon: "🚽",
-      votes: 234
-    },
-    {
-      id: "streetlights",
-      title: "Street Lighting",
-      description: "Install LED streetlights for safer streets",
-      icon: "💡",
-      votes: 189
-    },
-    {
-      id: "youth",
-      title: "Youth Development",
-      description: "Digital skills training for young people",
-      icon: "💻",
-      votes: 156
-    }
-  ],
-  timeRemaining: "3 days remaining",
-  totalVotes: 579
-};
+// Western Cape Municipalities
+const westernCapeMunicipalities = [
+  "City of Cape Town", "Stellenbosch", "Drakenstein", "Witzenberg", 
+  "Breede Valley", "Langeberg", "Swellendam", "Theewaterskloof",
+  "Overstrand", "Cape Agulhas", "Swartland", "Saldanha Bay",
+  "Bergrivier", "Cederberg", "Matzikama", "Bitou", "Knysna",
+  "George", "Hessequa", "Oudtshoorn", "Kannaland", "Laingsburg",
+  "Prince Albert", "Beaufort West", "Central Karoo"
+];
+
+// Default Provincial Voting Agendas
+const defaultProvincialAgendas = [
+  {
+    id: "provincial_transport_2024",
+    title: "Western Cape Transport Infrastructure R2.5 Billion Budget",
+    description: "Allocate provincial transport budget for critical infrastructure improvements across Western Cape municipalities. Your vote determines infrastructure priorities for the next 3 years.",
+    type: "provincial",
+    municipality: "Western Cape Province",
+    options: [
+      {
+        id: "rail_expansion",
+        title: "Metrorail Expansion & Safety",
+        description: "Extend rail lines to underserved areas and improve station security",
+        icon: "🚂",
+        votes: 2847
+      },
+      {
+        id: "bus_rapid_transit",
+        title: "MyCiTi Bus Network Extension",
+        description: "Expand BRT system to townships and rural communities",
+        icon: "🚌",
+        votes: 1923
+      },
+      {
+        id: "road_maintenance",
+        title: "Provincial Road Maintenance",
+        description: "Fix potholes and upgrade rural road infrastructure",
+        icon: "🛣️",
+        votes: 3156
+      },
+      {
+        id: "cycling_infrastructure",
+        title: "Safe Cycling Infrastructure",
+        description: "Build protected bike lanes and cycling paths",
+        icon: "🚴",
+        votes: 892
+      }
+    ],
+    timeRemaining: "12 days remaining",
+    totalVotes: 8818,
+    active: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "provincial_education_2024",
+    title: "Digital Education Initiative - R800 Million Investment",
+    description: "Provincial education modernization focusing on digital literacy and infrastructure for disadvantaged schools across Western Cape.",
+    type: "provincial",
+    municipality: "Western Cape Province",
+    options: [
+      {
+        id: "tablet_program",
+        title: "Tablet Distribution Program",
+        description: "Provide tablets to Grade 4-12 learners in no-fee schools",
+        icon: "📱",
+        votes: 4523
+      },
+      {
+        id: "wifi_schools",
+        title: "School WiFi Connectivity",
+        description: "High-speed internet for all public schools",
+        icon: "📶",
+        votes: 3891
+      },
+      {
+        id: "teacher_training",
+        title: "Digital Skills Teacher Training",
+        description: "Train educators in digital teaching methods",
+        icon: "👨‍🏫",
+        votes: 2156
+      },
+      {
+        id: "computer_labs",
+        title: "Modern Computer Laboratories",
+        description: "Build and upgrade computer labs in rural schools",
+        icon: "💻",
+        votes: 1834
+      }
+    ],
+    timeRemaining: "8 days remaining",
+    totalVotes: 12404,
+    active: true,
+    createdAt: new Date().toISOString()
+  }
+];
+
+// Default Municipal Voting Agendas (City of Cape Town example)
+const defaultMunicipalAgendas = [
+  {
+    id: "cpt_housing_2024",
+    title: "Cape Town Affordable Housing - Ward 23 R15 Million",
+    description: "Decide on affordable housing priorities for Ward 23. Choose how to best address the housing crisis affecting our community members.",
+    type: "municipal",
+    municipality: "City of Cape Town - Ward 23",
+    options: [
+      {
+        id: "social_housing",
+        title: "Social Housing Development",
+        description: "Build 200 subsidized housing units for families earning under R3,500",
+        icon: "🏠",
+        votes: 1247
+      },
+      {
+        id: "backyard_upgrade",
+        title: "Backyard Dwelling Upgrades",
+        description: "Improve existing informal backyard dwellings with electricity & water",
+        icon: "⚡",
+        votes: 856
+      },
+      {
+        id: "temporary_housing",
+        title: "Temporary Relocation Assistance",
+        description: "Support families during housing transitions with temporary accommodation",
+        icon: "🏚️",
+        votes: 423
+      },
+      {
+        id: "land_purchase",
+        title: "Community Land Purchase",
+        description: "Acquire land for future affordable housing developments",
+        icon: "🌍",
+        votes: 678
+      }
+    ],
+    timeRemaining: "5 days remaining",
+    totalVotes: 3204,
+    active: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "cpt_services_2024",
+    title: "Essential Services Improvement - Khayelitsha R8 Million",
+    description: "Critical infrastructure improvements for Khayelitsha community. Address basic service delivery challenges affecting daily life.",
+    type: "municipal", 
+    municipality: "City of Cape Town - Khayelitsha",
+    options: [
+      {
+        id: "water_infrastructure",
+        title: "Water & Sanitation Upgrade",
+        description: "Install flush toilets and reliable water supply systems",
+        icon: "🚰",
+        votes: 2156
+      },
+      {
+        id: "waste_management",
+        title: "Waste Collection Enhancement",
+        description: "Daily refuse collection and recycling programs",
+        icon: "♻️",
+        votes: 1834
+      },
+      {
+        id: "street_lighting",
+        title: "LED Street Lighting Project",
+        description: "Solar-powered LED lights for safer streets at night",
+        icon: "💡",
+        votes: 1623
+      },
+      {
+        id: "community_clinic",
+        title: "Mobile Health Clinic",
+        description: "Weekly mobile clinic visits for basic healthcare",
+        icon: "🏥",
+        votes: 1089
+      }
+    ],
+    timeRemaining: "7 days remaining", 
+    totalVotes: 6702,
+    active: true,
+    createdAt: new Date().toISOString()
+  }
+];
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [user, setUser] = useState<User | null>(null);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [agendas, setAgendas] = useState([]);
+  const [votingType, setVotingType] = useState<"provincial" | "municipal">("provincial");
 
   useEffect(() => {
     // Check if user is logged in
@@ -79,8 +232,10 @@ const Index = () => {
     if (storedAgendas) {
       setAgendas(JSON.parse(storedAgendas));
     } else {
-      // Set default agenda if none exists
-      setAgendas([mockVotingData]);
+      // Set default agendas with South African context
+      const defaultAgendas = [...defaultProvincialAgendas, ...defaultMunicipalAgendas];
+      setAgendas(defaultAgendas);
+      localStorage.setItem("civiclink_agendas", JSON.stringify(defaultAgendas));
     }
   }, []);
 
@@ -134,12 +289,12 @@ const Index = () => {
           <div className="relative z-10 px-8 py-12 text-white">
             <div className="max-w-2xl space-y-6">
               <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
-                Power to Every Voice
+                Democracy in the Western Cape
               </h1>
               <p className="text-xl text-primary-foreground/90">
-                Secure blockchain voting powered by our partnership with Ethereum. 
-                Participate in democracy from anywhere, verify your vote on-chain, 
-                and help shape your community's future with crypto-verified transparency.
+                Secure blockchain voting for South African communities. Participate in provincial 
+                and municipal decisions, from Cape Town to rural Western Cape. Your voice shapes 
+                infrastructure, housing, education, and essential services with Ethereum-verified transparency.
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -166,7 +321,7 @@ const Index = () => {
               </div>
               <CardTitle>Ethereum-Powered Security</CardTitle>
               <CardDescription>
-                Every vote is secured by Ethereum's immutable blockchain with gas-free transactions for voters
+                Every vote secured by Ethereum blockchain - accessible even with basic smartphones and data connectivity
               </CardDescription>
             </CardHeader>
           </Card>
@@ -178,7 +333,7 @@ const Index = () => {
               </div>
               <CardTitle>Real-Time Verification</CardTitle>
               <CardDescription>
-                Track your vote live on Ethereum blockchain with instant transaction confirmations
+                Track votes in real-time with SMS confirmations - no internet required for verification
               </CardDescription>
             </CardHeader>
           </Card>
@@ -190,7 +345,7 @@ const Index = () => {
               </div>
               <CardTitle>Community First</CardTitle>
               <CardDescription>
-                Beyond voting - participate in discussions, propose ideas, and engage with your community
+                From provincial transport to local housing - participate in decisions that directly impact your community
               </CardDescription>
             </CardHeader>
           </Card>
@@ -199,14 +354,18 @@ const Index = () => {
         {/* Main Dashboard */}
         <section>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-5' : 'grid-cols-4'} bg-white/50 backdrop-blur-sm`}>
+            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-6' : 'grid-cols-5'} bg-white/50 backdrop-blur-sm`}>
               <TabsTrigger value="dashboard" className="gap-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="hidden sm:inline">Dashboard</span>
               </TabsTrigger>
-              <TabsTrigger value="vote" className="gap-2">
+              <TabsTrigger value="provincial" className="gap-2">
+                <Globe className="w-4 h-4" />
+                <span className="hidden sm:inline">Provincial</span>
+              </TabsTrigger>
+              <TabsTrigger value="municipal" className="gap-2">
                 <Vote className="w-4 h-4" />
-                <span className="hidden sm:inline">Vote</span>
+                <span className="hidden sm:inline">Municipal</span>
               </TabsTrigger>
               <TabsTrigger value="engage" className="gap-2">
                 <Users className="w-4 h-4" />
@@ -226,70 +385,105 @@ const Index = () => {
 
             <TabsContent value="dashboard" className="space-y-6">
               <div className="text-center space-y-2">
-                <h2 className="text-2xl font-bold">Welcome back, {user.username}!</h2>
+                <h2 className="text-2xl font-bold">Sawubona, {user.username}!</h2>
                 <p className="text-muted-foreground">
-                  {user.isAdmin ? "Administrative overview of the platform" : "Here's what's happening in your community"}
+                  {user.isAdmin ? "Administrative overview - Western Cape CivicLink" : "Current voting opportunities in the Western Cape"}
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <Card className="bg-gradient-trust">
                   <CardContent className="p-6 text-center">
-                    <div className="text-2xl font-bold text-primary">3</div>
+                    <div className="text-2xl font-bold text-primary">{agendas.filter((a: any) => a.active).length}</div>
                     <p className="text-sm text-muted-foreground">Active Votes</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-trust">
                   <CardContent className="p-6 text-center">
-                    <div className="text-2xl font-bold text-secondary">12</div>
-                    <p className="text-sm text-muted-foreground">Votes Cast</p>
+                    <div className="text-2xl font-bold text-secondary">{agendas.filter((a: any) => a.type === "provincial").length}</div>
+                    <p className="text-sm text-muted-foreground">Provincial Issues</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-trust">
                   <CardContent className="p-6 text-center">
-                    <div className="text-2xl font-bold text-accent">89%</div>
-                    <p className="text-sm text-muted-foreground">Participation</p>
+                    <div className="text-2xl font-bold text-accent">{agendas.filter((a: any) => a.type === "municipal").length}</div>
+                    <p className="text-sm text-muted-foreground">Municipal Issues</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-trust">
                   <CardContent className="p-6 text-center">
-                    <div className="text-2xl font-bold text-success">5</div>
-                    <p className="text-sm text-muted-foreground">Proposals Made</p>
+                    <div className="text-2xl font-bold text-success">84%</div>
+                    <p className="text-sm text-muted-foreground">Community Participation</p>
                   </CardContent>
                 </Card>
               </div>
 
-              {agendas.length > 0 ? (
-                <VotingCard
-                  {...(agendas.find((a: any) => a.active) || agendas[0])}
-                  onVote={(optionId) => console.log("Voted for:", optionId)}
-                />
-              ) : (
-                <Card className="text-center p-8">
-                  <p className="text-muted-foreground">No active voting agendas available</p>
-                </Card>
-              )}
+              {/* Featured Votes */}
+              <div className="space-y-4">
+                <h3 className="text-lg font-semibold">Featured Community Votes</h3>
+                {agendas.filter((a: any) => a.active).slice(0, 2).map((agenda: any) => (
+                  <VotingCard
+                    key={agenda.id}
+                    {...agenda}
+                    onVote={(optionId) => console.log("Voted for:", optionId)}
+                  />
+                ))}
+                {agendas.filter((a: any) => a.active).length === 0 && (
+                  <Card className="text-center p-8">
+                    <p className="text-muted-foreground">No active voting agendas available</p>
+                  </Card>
+                )}
+              </div>
             </TabsContent>
 
-            <TabsContent value="vote">
-              {agendas.length > 0 ? (
+            <TabsContent value="provincial" className="space-y-6">
+              <div className="text-center space-y-2 mb-6">
+                <h2 className="text-2xl font-bold">Western Cape Provincial Voting</h2>
+                <p className="text-muted-foreground">
+                  Vote on province-wide initiatives affecting all Western Cape communities
+                </p>
+              </div>
+              
+              {agendas.filter((a: any) => a.active && a.type === "provincial").length > 0 ? (
                 <div className="space-y-6">
-                  {agendas.filter((a: any) => a.active).map((agenda: any) => (
+                  {agendas.filter((a: any) => a.active && a.type === "provincial").map((agenda: any) => (
                     <VotingCard
                       key={agenda.id}
                       {...agenda}
                       onVote={(optionId) => console.log("Voted for:", optionId)}
                     />
                   ))}
-                  {agendas.filter((a: any) => a.active).length === 0 && (
-                    <Card className="text-center p-8">
-                      <p className="text-muted-foreground">No active votes at this time</p>
-                    </Card>
-                  )}
                 </div>
               ) : (
                 <Card className="text-center p-8">
-                  <p className="text-muted-foreground">No voting agendas available</p>
+                  <Globe className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No active provincial votes at this time</p>
+                </Card>
+              )}
+            </TabsContent>
+
+            <TabsContent value="municipal" className="space-y-6">
+              <div className="text-center space-y-2 mb-6">
+                <h2 className="text-2xl font-bold">Municipal & Local Community Voting</h2>
+                <p className="text-muted-foreground">
+                  Vote on local issues affecting your specific municipality and ward
+                </p>
+              </div>
+              
+              {agendas.filter((a: any) => a.active && a.type === "municipal").length > 0 ? (
+                <div className="space-y-6">
+                  {agendas.filter((a: any) => a.active && a.type === "municipal").map((agenda: any) => (
+                    <VotingCard
+                      key={agenda.id}
+                      {...agenda}
+                      onVote={(optionId) => console.log("Voted for:", optionId)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Card className="text-center p-8">
+                  <Vote className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No active municipal votes at this time</p>
                 </Card>
               )}
             </TabsContent>

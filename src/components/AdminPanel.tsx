@@ -11,6 +11,8 @@ interface VotingAgenda {
   id: string;
   title: string;
   description: string;
+  type: "provincial" | "municipal";
+  municipality: string;
   options: Array<{
     id: string;
     title: string;
@@ -27,8 +29,19 @@ export const AdminPanel = () => {
   const [newAgenda, setNewAgenda] = useState({
     title: "",
     description: "",
+    type: "municipal" as "provincial" | "municipal",
+    municipality: "City of Cape Town",
     options: [{ title: "", description: "", icon: "🗳️" }]
   });
+
+  // Western Cape Municipalities
+  const municipalities = [
+    "Western Cape Province", "City of Cape Town", "Stellenbosch", "Drakenstein", 
+    "Witzenberg", "Breede Valley", "Langeberg", "Swellendam", "Theewaterskloof",
+    "Overstrand", "Cape Agulhas", "Swartland", "Saldanha Bay", "Bergrivier", 
+    "Cederberg", "Matzikama", "Bitou", "Knysna", "George", "Hessequa", 
+    "Oudtshoorn", "Kannaland", "Laingsburg", "Prince Albert", "Beaufort West"
+  ];
   const { toast } = useToast();
 
   useEffect(() => {
@@ -78,6 +91,8 @@ export const AdminPanel = () => {
       id: Date.now().toString(),
       title: newAgenda.title,
       description: newAgenda.description,
+      type: newAgenda.type,
+      municipality: newAgenda.municipality,
       options: newAgenda.options.map((opt, idx) => ({
         ...opt,
         id: `opt_${idx}`,
@@ -95,12 +110,14 @@ export const AdminPanel = () => {
     setNewAgenda({
       title: "",
       description: "",
+      type: "municipal",
+      municipality: "City of Cape Town",
       options: [{ title: "", description: "", icon: "🗳️" }]
     });
 
     toast({
       title: "Voting agenda created",
-      description: "New agenda is now live for community voting"
+      description: `New ${newAgenda.type} agenda is now live for community voting`
     });
   };
 
@@ -136,7 +153,7 @@ export const AdminPanel = () => {
             <div>
               <CardTitle className="text-2xl">Admin Dashboard</CardTitle>
               <CardDescription className="text-white/80">
-                Manage voting agendas and platform settings
+                Manage Western Cape provincial and municipal voting agendas
               </CardDescription>
             </div>
           </div>
@@ -176,14 +193,41 @@ export const AdminPanel = () => {
             Create New Voting Agenda
           </CardTitle>
           <CardDescription>
-            Add a new item for community voting
+            Create provincial or municipal voting agenda for Western Cape communities
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label>Voting Type</Label>
+              <select 
+                className="w-full p-2 rounded-md border border-input bg-background"
+                value={newAgenda.type}
+                onChange={(e) => setNewAgenda({...newAgenda, type: e.target.value as "provincial" | "municipal"})}
+              >
+                <option value="municipal">Municipal (Local)</option>
+                <option value="provincial">Provincial (Western Cape)</option>
+              </select>
+            </div>
+            
+            <div className="space-y-2">
+              <Label>Municipality/Area</Label>
+              <select 
+                className="w-full p-2 rounded-md border border-input bg-background"
+                value={newAgenda.municipality}
+                onChange={(e) => setNewAgenda({...newAgenda, municipality: e.target.value})}
+              >
+                {municipalities.map(muni => (
+                  <option key={muni} value={muni}>{muni}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+
           <div className="space-y-2">
             <Label>Title</Label>
             <Input
-              placeholder="e.g. Community Budget Allocation 2024"
+              placeholder="e.g. Housing Development Budget R15 Million - Ward 23"
               value={newAgenda.title}
               onChange={(e) => setNewAgenda({...newAgenda, title: e.target.value})}
             />
@@ -192,7 +236,7 @@ export const AdminPanel = () => {
           <div className="space-y-2">
             <Label>Description</Label>
             <Textarea
-              placeholder="Describe what this vote is about..."
+              placeholder="Describe the community issue and budget allocation..."
               value={newAgenda.description}
               onChange={(e) => setNewAgenda({...newAgenda, description: e.target.value})}
             />
@@ -263,14 +307,18 @@ export const AdminPanel = () => {
                       <div className="flex-1">
                         <h3 className="font-semibold">{agenda.title}</h3>
                         <p className="text-sm text-muted-foreground mb-2">{agenda.description}</p>
-                        <div className="flex gap-2 text-xs">
+                        <div className="flex gap-2 text-xs mb-2">
                           <span className={`px-2 py-1 rounded ${agenda.active ? 'bg-success text-success-foreground' : 'bg-muted text-muted-foreground'}`}>
                             {agenda.active ? 'Active' : 'Inactive'}
+                          </span>
+                          <span className={`px-2 py-1 rounded ${agenda.type === 'provincial' ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}>
+                            {agenda.type === 'provincial' ? 'Provincial' : 'Municipal'}
                           </span>
                           <span className="px-2 py-1 bg-muted text-muted-foreground rounded">
                             {agenda.options.length} options
                           </span>
                         </div>
+                        <p className="text-xs text-muted-foreground">{agenda.municipality}</p>
                       </div>
                       <div className="flex gap-2">
                         <Button
