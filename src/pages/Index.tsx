@@ -27,6 +27,8 @@ import civicHeroImage from "@/assets/civic-hero.jpg";
 interface User {
   username: string;
   isAdmin: boolean;
+  municipality: string;
+  ward: string;
 }
 
 // Western Cape Municipalities
@@ -387,7 +389,7 @@ const Index = () => {
               <div className="text-center space-y-2">
                 <h2 className="text-2xl font-bold">Sawubona, {user.username}!</h2>
                 <p className="text-muted-foreground">
-                  {user.isAdmin ? "Administrative overview - Western Cape CivicLink" : "Current voting opportunities in the Western Cape"}
+                  {user.isAdmin ? "Administrative overview - Western Cape CivicLink" : `Representing ${user.ward} • ${user.municipality}`}
                 </p>
               </div>
 
@@ -420,17 +422,17 @@ const Index = () => {
 
               {/* Featured Votes */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Featured Community Votes</h3>
-                {agendas.filter((a: any) => a.active).slice(0, 2).map((agenda: any) => (
+                <h3 className="text-lg font-semibold">Active Votes for Your Area</h3>
+                {agendas.filter((a: any) => a.active && (a.municipality.includes("Cape Town") || a.municipality.includes(user.municipality))).slice(0, 2).map((agenda: any) => (
                   <VotingCard
                     key={agenda.id}
                     {...agenda}
                     onVote={(optionId) => console.log("Voted for:", optionId)}
                   />
                 ))}
-                {agendas.filter((a: any) => a.active).length === 0 && (
+                {agendas.filter((a: any) => a.active && (a.municipality.includes("Cape Town") || a.municipality.includes(user.municipality))).length === 0 && (
                   <Card className="text-center p-8">
-                    <p className="text-muted-foreground">No active voting agendas available</p>
+                    <p className="text-muted-foreground">No active voting agendas for your area</p>
                   </Card>
                 )}
               </div>
@@ -466,13 +468,13 @@ const Index = () => {
               <div className="text-center space-y-2 mb-6">
                 <h2 className="text-2xl font-bold">Municipal & Local Community Voting</h2>
                 <p className="text-muted-foreground">
-                  Vote on local issues affecting your specific municipality and ward
+                  Vote on local issues for {user.ward} and Cape Town municipal matters
                 </p>
               </div>
               
-              {agendas.filter((a: any) => a.active && a.type === "municipal").length > 0 ? (
+              {agendas.filter((a: any) => a.active && a.type === "municipal" && a.municipality.includes("Cape Town")).length > 0 ? (
                 <div className="space-y-6">
-                  {agendas.filter((a: any) => a.active && a.type === "municipal").map((agenda: any) => (
+                  {agendas.filter((a: any) => a.active && a.type === "municipal" && a.municipality.includes("Cape Town")).map((agenda: any) => (
                     <VotingCard
                       key={agenda.id}
                       {...agenda}
@@ -483,7 +485,7 @@ const Index = () => {
               ) : (
                 <Card className="text-center p-8">
                   <Vote className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No active municipal votes at this time</p>
+                  <p className="text-muted-foreground">No active Cape Town municipal votes at this time</p>
                 </Card>
               )}
             </TabsContent>
