@@ -4,7 +4,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { 
-  Shield, 
   CheckCircle, 
   Copy, 
   ExternalLink, 
@@ -13,6 +12,7 @@ import {
   Lock,
   AlertCircle 
 } from "lucide-react";
+import { BeeIcon } from "@/components/BeeIcon";
 import { cn } from "@/lib/utils";
 
 interface VoteRecord {
@@ -67,7 +67,7 @@ export const VoteVerification = () => {
       {/* Header */}
       <div className="text-center space-y-2">
         <div className="flex items-center justify-center gap-2 mb-4">
-          <Shield className="w-8 h-8 text-primary" />
+          <BeeIcon className="w-8 h-8" />
           <h2 className="text-2xl font-bold text-foreground">Vote Verification</h2>
         </div>
         <p className="text-muted-foreground">
@@ -101,7 +101,7 @@ export const VoteVerification = () => {
             >
               {isSearching ? (
                 <div className="animate-trust-pulse">
-                  <Shield className="w-4 h-4" />
+                  <BeeIcon className="w-4 h-4" />
                 </div>
               ) : (
                 <Search className="w-4 h-4" />
@@ -129,7 +129,7 @@ export const VoteVerification = () => {
                 Vote Verified
               </CardTitle>
               <Badge variant="outline" className="bg-success/10 text-success border-success">
-                <Shield className="w-3 h-3 mr-1" />
+                <BeeIcon className="w-3 h-3 mr-1" />
                 Blockchain Confirmed
               </Badge>
             </div>
@@ -169,7 +169,7 @@ export const VoteVerification = () => {
             {/* Blockchain Details */}
             <div className="space-y-4">
               <h4 className="font-medium text-foreground flex items-center gap-2">
-                <Shield className="w-4 h-4" />
+                <BeeIcon className="w-4 h-4" />
                 Blockchain Details
               </h4>
               
@@ -215,7 +215,7 @@ export const VoteVerification = () => {
             {/* Security Notice */}
             <div className="bg-primary/5 border border-primary/20 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <Shield className="w-5 h-5 text-primary mt-0.5" />
+                <BeeIcon className="w-5 h-5 mt-0.5" />
                 <div className="space-y-1">
                   <h5 className="font-medium text-primary">Your Vote is Secure</h5>
                   <p className="text-sm text-muted-foreground">

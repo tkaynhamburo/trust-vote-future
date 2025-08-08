@@ -11,7 +11,6 @@ import { AdminPanel } from "@/components/AdminPanel";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import { 
   Vote, 
-  Shield, 
   Users, 
   Globe, 
   TrendingUp, 
@@ -24,6 +23,7 @@ import {
   Zap,
   Bell
 } from "lucide-react";
+import { BeeIcon } from "@/components/BeeIcon";
 import civicHeroImage from "@/assets/civic-hero.jpg";
 
 interface User {
@@ -416,7 +416,7 @@ const Index = () => {
         <div className="min-h-screen bg-gradient-trust flex items-center justify-center">
           <div className="text-center space-y-4">
             <div className="w-20 h-20 bg-gradient-ethereum rounded-full flex items-center justify-center mx-auto animate-pulse">
-              <Shield className="w-10 h-10 text-white" />
+              <BeeIcon className="w-10 h-10" />
             </div>
             <h1 className="text-2xl font-bold">Welcome to CivicLink</h1>
             <p className="text-muted-foreground">Connecting to secure authentication...</p>
@@ -465,7 +465,7 @@ const Index = () => {
                   <ArrowRight className="w-4 h-4" />
                 </Button>
                 <Button variant="outline" size="xl" className="gap-2 bg-white/10 border-white/20 text-white hover:bg-white/20">
-                  <Shield className="w-5 h-5" />
+                  <BeeIcon className="w-5 h-5" />
                   Learn More
                 </Button>
               </div>
@@ -537,7 +537,7 @@ const Index = () => {
                 <span className="hidden sm:inline">Engage</span>
               </TabsTrigger>
               <TabsTrigger value="verify" className="gap-2">
-                <Shield className="w-4 h-4" />
+                <BeeIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">Verify</span>
               </TabsTrigger>
               {user.isAdmin && (

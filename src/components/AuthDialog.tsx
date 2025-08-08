@@ -4,7 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { User, Shield } from "lucide-react";
+import { User } from "lucide-react";
+import { BeeIcon } from "@/components/BeeIcon";
 
 interface AuthDialogProps {
   open: boolean;
@@ -201,7 +202,7 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
               "Connecting..."
             ) : (
               <>
-                <Shield className="w-4 h-4" />
+                <BeeIcon className="w-4 h-4" />
                 Enter CivicLink
               </>
             )}

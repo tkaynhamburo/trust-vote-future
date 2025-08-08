@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Clock, Users, Shield } from "lucide-react";
+import { CheckCircle, Clock, Users } from "lucide-react";
+import { BeeIcon } from "@/components/BeeIcon";
 import { cn } from "@/lib/utils";
 
 interface VotingOption {
@@ -76,7 +77,7 @@ export const VotingCard = ({
             <span>{totalVotes.toLocaleString()} votes</span>
           </div>
           <div className="flex items-center gap-1">
-            <Shield className="w-4 h-4" />
+            <BeeIcon className="w-4 h-4" />
             <span>Blockchain Verified</span>
           </div>
         </div>
@@ -121,7 +122,7 @@ export const VotingCard = ({
               {isVoting && selectedOption === option.id && (
                 <div className="absolute inset-0 bg-primary/10 rounded-lg flex items-center justify-center backdrop-blur-sm">
                   <div className="animate-trust-pulse">
-                    <Shield className="w-8 h-8 text-primary" />
+                    <BeeIcon className="w-8 h-8" />
                   </div>
                 </div>
               )}

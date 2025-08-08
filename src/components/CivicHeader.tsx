@@ -2,7 +2,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Bell, Menu, Shield, LogOut, Crown } from "lucide-react";
+import { Bell, Menu, LogOut, Crown } from "lucide-react";
+import { BeeIcon } from "@/components/BeeIcon";
 
 interface CivicHeaderProps {
   user: {
@@ -24,7 +25,7 @@ export const CivicHeader = ({ user, notifications, onLogout }: CivicHeaderProps)
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
+                <BeeIcon className="w-6 h-6" />
               </div>
               <div className="text-white">
                 <h1 className="text-xl font-bold">CivicLink</h1>
@@ -63,7 +64,7 @@ export const CivicHeader = ({ user, notifications, onLogout }: CivicHeaderProps)
                     {user.isAdmin && <Crown className="w-3 h-3 text-accent" />}
                   </p>
                   <div className="flex items-center gap-1">
-                    <Shield className="w-3 h-3 text-secondary" />
+                    <BeeIcon className="w-3 h-3" />
                     <span className="text-xs text-white/80">
                       {user.isAdmin ? "Administrator" : "Verified Voter"}
                     </span>
