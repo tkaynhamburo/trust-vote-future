@@ -24,8 +24,13 @@ interface VotingAgenda {
   createdAt: string;
 }
 
-export const AdminPanel = () => {
-  const [agendas, setAgendas] = useState<VotingAgenda[]>([]);
+interface AdminPanelProps {
+  agendas: VotingAgenda[];
+  setAgendas: (agendas: VotingAgenda[]) => void;
+}
+
+export const AdminPanel = ({ agendas: initialAgendas, setAgendas: setParentAgendas }: AdminPanelProps) => {
+  const [agendas, setAgendas] = useState<VotingAgenda[]>(initialAgendas || []);
   const [newAgenda, setNewAgenda] = useState({
     title: "",
     description: "",
@@ -55,6 +60,7 @@ export const AdminPanel = () => {
   const saveAgendas = (updatedAgendas: VotingAgenda[]) => {
     localStorage.setItem("civiclink_agendas", JSON.stringify(updatedAgendas));
     setAgendas(updatedAgendas);
+    setParentAgendas(updatedAgendas);
   };
 
   const addOption = () => {

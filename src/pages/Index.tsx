@@ -8,6 +8,7 @@ import { EngagementHub } from "@/components/EngagementHub";
 import { VoteVerification } from "@/components/VoteVerification";
 import { AuthDialog } from "@/components/AuthDialog";
 import { AdminPanel } from "@/components/AdminPanel";
+import { NotificationCenter } from "@/components/NotificationCenter";
 import { 
   Vote, 
   Shield, 
@@ -20,7 +21,8 @@ import {
   Lock,
   Crown,
   Activity,
-  Zap
+  Zap,
+  Bell
 } from "lucide-react";
 import civicHeroImage from "@/assets/civic-hero.jpg";
 
@@ -127,91 +129,236 @@ const defaultProvincialAgendas = [
   }
 ];
 
-// Default Municipal Voting Agendas (City of Cape Town example)
-const defaultMunicipalAgendas = [
-  {
-    id: "cpt_housing_2024",
-    title: "Cape Town Affordable Housing - Ward 23 R15 Million",
-    description: "Decide on affordable housing priorities for Ward 23. Choose how to best address the housing crisis affecting our community members.",
-    type: "municipal",
-    municipality: "City of Cape Town - Ward 23",
-    options: [
-      {
-        id: "social_housing",
-        title: "Social Housing Development",
-        description: "Build 200 subsidized housing units for families earning under R3,500",
-        icon: "🏠",
-        votes: 1247
-      },
-      {
-        id: "backyard_upgrade",
-        title: "Backyard Dwelling Upgrades",
-        description: "Improve existing informal backyard dwellings with electricity & water",
-        icon: "⚡",
-        votes: 856
-      },
-      {
-        id: "temporary_housing",
-        title: "Temporary Relocation Assistance",
-        description: "Support families during housing transitions with temporary accommodation",
-        icon: "🏚️",
-        votes: 423
-      },
-      {
-        id: "land_purchase",
-        title: "Community Land Purchase",
-        description: "Acquire land for future affordable housing developments",
-        icon: "🌍",
-        votes: 678
-      }
-    ],
-    timeRemaining: "5 days remaining",
-    totalVotes: 3204,
-    active: true,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "cpt_services_2024",
-    title: "Essential Services Improvement - Khayelitsha R8 Million",
-    description: "Critical infrastructure improvements for Khayelitsha community. Address basic service delivery challenges affecting daily life.",
-    type: "municipal", 
-    municipality: "City of Cape Town - Khayelitsha",
-    options: [
-      {
-        id: "water_infrastructure",
-        title: "Water & Sanitation Upgrade",
-        description: "Install flush toilets and reliable water supply systems",
-        icon: "🚰",
-        votes: 2156
-      },
-      {
-        id: "waste_management",
-        title: "Waste Collection Enhancement",
-        description: "Daily refuse collection and recycling programs",
-        icon: "♻️",
-        votes: 1834
-      },
-      {
-        id: "street_lighting",
-        title: "LED Street Lighting Project",
-        description: "Solar-powered LED lights for safer streets at night",
-        icon: "💡",
-        votes: 1623
-      },
-      {
-        id: "community_clinic",
-        title: "Mobile Health Clinic",
-        description: "Weekly mobile clinic visits for basic healthcare",
-        icon: "🏥",
-        votes: 1089
-      }
-    ],
-    timeRemaining: "7 days remaining", 
-    totalVotes: 6702,
-    active: true,
-    createdAt: new Date().toISOString()
+// Community-tailored Municipal Voting Agendas
+const getCommunityTailoredAgendas = (municipality: string, ward: string) => {
+  const baseAgendas = [];
+  
+  // Cape Town specific agendas
+  if (municipality === "City of Cape Town") {
+    if (ward.includes("Langa") || ward.includes("Bonteheuwel") || ward.includes("Ward 23")) {
+      baseAgendas.push({
+        id: "cpt_housing_2024",
+        title: "Langa-Bonteheuwel Affordable Housing - R15 Million",
+        description: "Address housing shortage in established townships. Focus on upgrading existing communities while preserving cultural heritage.",
+        type: "municipal",
+        municipality: `${municipality} - ${ward}`,
+        options: [
+          {
+            id: "social_housing",
+            title: "Social Housing Development",
+            description: "Build 200 subsidized units with community gardens",
+            icon: "🏠",
+            votes: 1247
+          },
+          {
+            id: "hostel_upgrade",
+            title: "Hostel Modernization",
+            description: "Convert old hostels into family-friendly housing",
+            icon: "🏢",
+            votes: 856
+          },
+          {
+            id: "community_facilities",
+            title: "Community Center Expansion",
+            description: "Build multipurpose community halls and libraries",
+            icon: "🏛️",
+            votes: 678
+          },
+          {
+            id: "heritage_preservation",
+            title: "Heritage Housing Project",
+            description: "Preserve historical buildings while adding modern amenities",
+            icon: "🏺",
+            votes: 423
+          }
+        ],
+        timeRemaining: "5 days remaining",
+        totalVotes: 3204,
+        active: true,
+        createdAt: new Date().toISOString()
+      });
+    }
+    
+    if (ward.includes("Khayelitsha") || ward.includes("Ward 26") || ward.includes("Ward 27")) {
+      baseAgendas.push({
+        id: "khayelitsha_services_2024",
+        title: "Khayelitsha Essential Services - R12 Million", 
+        description: "Critical infrastructure for informal settlements. Prioritize basic dignity and safety for all residents.",
+        type: "municipal",
+        municipality: `${municipality} - ${ward}`,
+        options: [
+          {
+            id: "water_infrastructure",
+            title: "Piped Water & Flush Toilets",
+            description: "Install household water connections and dignified sanitation",
+            icon: "🚰",
+            votes: 2156
+          },
+          {
+            id: "electricity_grid",
+            title: "Safe Electricity Connections",
+            description: "Replace illegal connections with prepaid meters",
+            icon: "⚡",
+            votes: 1834
+          },
+          {
+            id: "gravel_roads",
+            title: "All-Weather Road Access",
+            description: "Gravel roads and stormwater drainage for wet season access",
+            icon: "🛣️",
+            votes: 1623
+          },
+          {
+            id: "health_safety",
+            title: "Mobile Clinic & Fire Station",
+            description: "Weekly health services and emergency response capacity",
+            icon: "🚑",
+            votes: 1089
+          }
+        ],
+        timeRemaining: "7 days remaining",
+        totalVotes: 6702,
+        active: true,
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    if (ward.includes("Sea Point") || ward.includes("Camps Bay") || ward.includes("Ward 2") || ward.includes("Ward 11")) {
+      baseAgendas.push({
+        id: "atlantic_seaboard_2024",
+        title: "Atlantic Seaboard Infrastructure - R25 Million",
+        description: "Enhance coastal infrastructure and sustainable development for high-density tourism area.",
+        type: "municipal", 
+        municipality: `${municipality} - ${ward}`,
+        options: [
+          {
+            id: "coastal_protection",
+            title: "Coastal Erosion Protection", 
+            description: "Build sea walls and sand stabilization systems",
+            icon: "🌊",
+            votes: 1456
+          },
+          {
+            id: "green_transport",
+            title: "Electric Bus & Cycling Lanes",
+            description: "Sustainable transport corridors for residents and tourists",
+            icon: "🚌",
+            votes: 1234
+          },
+          {
+            id: "waste_recycling",
+            title: "Zero-Waste Initiative",
+            description: "Advanced recycling and composting systems",
+            icon: "♻️",
+            votes: 987
+          },
+          {
+            id: "affordable_integration",
+            title: "Affordable Housing Integration",
+            description: "Mixed-income housing to prevent displacement",
+            icon: "🏘️",
+            votes: 678
+          }
+        ],
+        timeRemaining: "10 days remaining",
+        totalVotes: 4355,
+        active: true,
+        createdAt: new Date().toISOString()
+      });
+    }
+
+    if (ward.includes("Mitchells Plain") || ward.includes("Ward 25")) {
+      baseAgendas.push({
+        id: "mitchells_plain_2024",
+        title: "Mitchells Plain Youth & Safety - R10 Million",
+        description: "Community safety and youth development in established residential area with high youth population.",
+        type: "municipal",
+        municipality: `${municipality} - ${ward}`,
+        options: [
+          {
+            id: "youth_centers",
+            title: "Youth Development Centers",
+            description: "Skills training and sports facilities for young people",
+            icon: "⚽",
+            votes: 1789
+          },
+          {
+            id: "community_policing",
+            title: "Community Safety Program",
+            description: "Neighborhood watch and improved street lighting",
+            icon: "🚨",
+            votes: 1567
+          },
+          {
+            id: "small_business",
+            title: "Small Business Incubators",
+            description: "Support local entrepreneurs and job creation",
+            icon: "💼",
+            votes: 1234
+          },
+          {
+            id: "transport_hubs",
+            title: "Safe Transport Hubs",
+            description: "Secure taxi ranks and bus stops with CCTV",
+            icon: "🚐",
+            votes: 945
+          }
+        ],
+        timeRemaining: "6 days remaining",
+        totalVotes: 5535,
+        active: true,
+        createdAt: new Date().toISOString()
+      });
+    }
   }
-];
+
+  // Other municipalities - generic rural/small town issues
+  else {
+    baseAgendas.push({
+      id: `${municipality.toLowerCase().replace(/\s+/g, '_')}_rural_2024`,
+      title: `${municipality} Rural Development - R6 Million`,
+      description: `Essential services and economic development for ${municipality}. Focus on agriculture, tourism, and basic infrastructure.`,
+      type: "municipal",
+      municipality: `${municipality} - ${ward}`,
+      options: [
+        {
+          id: "rural_roads",
+          title: "Rural Road Maintenance",
+          description: "Repair farm roads and improve access to markets",
+          icon: "🛤️",
+          votes: 456
+        },
+        {
+          id: "water_boreholes",
+          title: "Community Water Points",
+          description: "Drill boreholes and install communal water tanks",
+          icon: "💧",
+          votes: 678
+        },
+        {
+          id: "agriculture_support",
+          title: "Small-Scale Farmer Support",
+          description: "Seeds, tools, and agricultural training programs",
+          icon: "🌾",
+          votes: 543
+        },
+        {
+          id: "tourism_infrastructure",
+          title: "Tourism Development",
+          description: "Visitor centers and heritage site improvements",
+          icon: "🏞️",
+          votes: 321
+        }
+      ],
+      timeRemaining: "14 days remaining",
+      totalVotes: 1998,
+      active: true,
+      createdAt: new Date().toISOString()
+    });
+  }
+  
+  return baseAgendas;
+};
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -235,7 +382,13 @@ const Index = () => {
       setAgendas(JSON.parse(storedAgendas));
     } else {
       // Set default agendas with South African context
-      const defaultAgendas = [...defaultProvincialAgendas, ...defaultMunicipalAgendas];
+      const storedUser = localStorage.getItem("civiclink_user");
+      let municipalAgendas = [];
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        municipalAgendas = getCommunityTailoredAgendas(userData.municipality, userData.ward);
+      }
+      const defaultAgendas = [...defaultProvincialAgendas, ...municipalAgendas];
       setAgendas(defaultAgendas);
       localStorage.setItem("civiclink_agendas", JSON.stringify(defaultAgendas));
     }
@@ -243,6 +396,12 @@ const Index = () => {
 
   const handleAuthSuccess = (userData: User) => {
     setUser(userData);
+    
+    // Update agendas with community-tailored content
+    const communityAgendas = getCommunityTailoredAgendas(userData.municipality, userData.ward);
+    const updatedAgendas = [...defaultProvincialAgendas, ...communityAgendas];
+    setAgendas(updatedAgendas);
+    localStorage.setItem("civiclink_agendas", JSON.stringify(updatedAgendas));
   };
 
   const handleLogout = () => {
@@ -356,7 +515,7 @@ const Index = () => {
         {/* Main Dashboard */}
         <section>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-6' : 'grid-cols-5'} bg-white/50 backdrop-blur-sm`}>
+            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-7' : 'grid-cols-6'} bg-white/50 backdrop-blur-sm`}>
               <TabsTrigger value="dashboard" className="gap-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -368,6 +527,10 @@ const Index = () => {
               <TabsTrigger value="municipal" className="gap-2">
                 <Vote className="w-4 h-4" />
                 <span className="hidden sm:inline">Municipal</span>
+              </TabsTrigger>
+              <TabsTrigger value="notifications" className="gap-2">
+                <Bell className="w-4 h-4" />
+                <span className="hidden sm:inline">Notifications</span>
               </TabsTrigger>
               <TabsTrigger value="engage" className="gap-2">
                 <Users className="w-4 h-4" />
@@ -490,6 +653,10 @@ const Index = () => {
               )}
             </TabsContent>
 
+            <TabsContent value="notifications" className="space-y-6">
+              <NotificationCenter municipality={user.municipality} ward={user.ward} />
+            </TabsContent>
+
             <TabsContent value="engage">
               <EngagementHub />
             </TabsContent>
@@ -500,7 +667,7 @@ const Index = () => {
 
             {user.isAdmin && (
               <TabsContent value="admin">
-                <AdminPanel />
+                <AdminPanel agendas={agendas} setAgendas={setAgendas} />
               </TabsContent>
             )}
           </Tabs>

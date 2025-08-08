@@ -14,10 +14,20 @@ interface AuthDialogProps {
 
 export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProps) => {
   const [username, setUsername] = useState("");
-  const [municipality, setMunicipality] = useState("City of Cape Town");
+  const [municipality, setMunicipality] = useState("");
   const [ward, setWard] = useState("");
   const [loading, setLoading] = useState(false);
   const { toast } = useToast();
+
+  // Western Cape Municipalities
+  const westernCapeMunicipalities = [
+    "City of Cape Town", "Stellenbosch", "Drakenstein", "Witzenberg", 
+    "Breede Valley", "Langeberg", "Swellendam", "Theewaterskloof",
+    "Overstrand", "Cape Agulhas", "Swartland", "Saldanha Bay",
+    "Bergrivier", "Cederberg", "Matzikama", "Bitou", "Knysna",
+    "George", "Hessequa", "Oudtshoorn", "Kannaland", "Laingsburg",
+    "Prince Albert", "Beaufort West", "Central Karoo"
+  ];
 
   // Cape Town Areas/Wards
   const capeAreasList = [
@@ -55,10 +65,19 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
       return;
     }
 
+    if (!municipality) {
+      toast({
+        title: "Municipality required",
+        description: "Please select your municipality",
+        variant: "destructive"
+      });
+      return;
+    }
+
     if (!ward) {
       toast({
         title: "Area selection required",
-        description: "Please select your Cape Town area/ward",
+        description: "Please select your area/ward",
         variant: "destructive"
       });
       return;
@@ -99,9 +118,9 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
           <div className="w-16 h-16 bg-gradient-ethereum rounded-full flex items-center justify-center mx-auto">
             <User className="w-8 h-8 text-white" />
           </div>
-          <DialogTitle className="text-2xl">Join CivicLink Cape Town</DialogTitle>
+          <DialogTitle className="text-2xl">Join CivicLink Western Cape</DialogTitle>
           <p className="text-muted-foreground">
-            Democratic participation for Cape Town residents • Powered by <span className="text-primary font-semibold">Ethereum</span>
+            Democratic participation for Western Cape residents • Powered by <span className="text-primary font-semibold">Ethereum</span>
           </p>
         </DialogHeader>
         
@@ -119,29 +138,56 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
 
           <div className="space-y-2">
             <Label htmlFor="municipality">Municipality</Label>
-            <Input
+            <select
               id="municipality"
               value={municipality}
-              disabled
-              className="bg-muted/50"
-            />
+              onChange={(e) => {
+                setMunicipality(e.target.value);
+                setWard(""); // Reset ward when municipality changes
+              }}
+              className="w-full p-3 rounded-md border border-input bg-white/50 text-foreground"
+              required
+            >
+              <option value="">Select your municipality...</option>
+              {westernCapeMunicipalities.map((muni) => (
+                <option key={muni} value={muni}>
+                  {muni}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="ward">Your Cape Town Area/Ward</Label>
+            <Label htmlFor="ward">Your Area/Ward</Label>
             <select
               id="ward"
               value={ward}
               onChange={(e) => setWard(e.target.value)}
               className="w-full p-3 rounded-md border border-input bg-white/50 text-foreground"
               required
+              disabled={!municipality}
             >
-              <option value="">Select your area/ward...</option>
-              {capeAreasList.map((area) => (
+              <option value="">
+                {municipality === "City of Cape Town" 
+                  ? "Select your Cape Town area/ward..." 
+                  : municipality 
+                    ? `Select your ${municipality} area/ward...`
+                    : "First select your municipality"}
+              </option>
+              {municipality === "City of Cape Town" && capeAreasList.map((area) => (
                 <option key={area} value={area}>
                   {area}
                 </option>
               ))}
+              {municipality && municipality !== "City of Cape Town" && (
+                <>
+                  <option value={`${municipality} Ward 1`}>{municipality} Ward 1</option>
+                  <option value={`${municipality} Ward 2`}>{municipality} Ward 2</option>
+                  <option value={`${municipality} Ward 3`}>{municipality} Ward 3</option>
+                  <option value={`${municipality} Ward 4`}>{municipality} Ward 4</option>
+                  <option value={`${municipality} Ward 5`}>{municipality} Ward 5</option>
+                </>
+              )}
             </select>
           </div>
           
@@ -164,7 +210,7 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
           <div className="text-xs text-center text-muted-foreground space-y-1">
             <p>🔒 Secured by Ethereum blockchain</p>
             <p>✨ Admin access: Use username "tkay"</p>
-            <p>🏛️ Cape Town democratic participation</p>
+            <p>🏛️ Western Cape democratic participation</p>
           </div>
         </div>
       </DialogContent>
