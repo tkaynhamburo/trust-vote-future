@@ -138,29 +138,29 @@ const getCommunityTailoredAgendas = (municipality: string, ward: string) => {
     if (ward.includes("Langa") || ward.includes("Bonteheuwel") || ward.includes("Ward 23")) {
       baseAgendas.push({
         id: "cpt_housing_2024",
-        title: "Langa-Bonteheuwel Affordable Housing - R15 Million",
-        description: "Address housing shortage in established townships. Focus on upgrading existing communities while preserving cultural heritage.",
+        title: `${municipality} Housing Development for ${ward} - R15 Million`,
+        description: `Address housing shortage in ${ward} and surrounding ${municipality} townships. Focus on upgrading existing communities while preserving cultural heritage.`,
         type: "municipal",
         municipality: `${municipality} - ${ward}`,
         options: [
           {
             id: "social_housing",
-            title: "Social Housing Development",
-            description: "Build 200 subsidized units with community gardens",
+            title: `${municipality} Social Housing Development`,
+            description: `Build 200 subsidized units in ${ward} with community gardens`,
             icon: "🏠",
             votes: 1247
           },
           {
             id: "hostel_upgrade",
-            title: "Hostel Modernization",
-            description: "Convert old hostels into family-friendly housing",
+            title: `${ward} Hostel Modernization`,
+            description: `Convert old hostels in ${ward} into family-friendly housing`,
             icon: "🏢",
             votes: 856
           },
           {
             id: "community_facilities",
-            title: "Community Center Expansion",
-            description: "Build multipurpose community halls and libraries",
+            title: `${ward} Community Center Expansion`,
+            description: `Build multipurpose community halls and libraries in ${ward}`,
             icon: "🏛️",
             votes: 678
           },
@@ -182,22 +182,22 @@ const getCommunityTailoredAgendas = (municipality: string, ward: string) => {
     if (ward.includes("Khayelitsha") || ward.includes("Ward 26") || ward.includes("Ward 27")) {
       baseAgendas.push({
         id: "khayelitsha_services_2024",
-        title: "Khayelitsha Essential Services - R12 Million", 
-        description: "Critical infrastructure for informal settlements. Prioritize basic dignity and safety for all residents.",
+        title: `${municipality} Essential Services for ${ward} - R12 Million`, 
+        description: `Critical infrastructure for ${ward} informal settlements in ${municipality}. Prioritize basic dignity and safety for all residents.`,
         type: "municipal",
         municipality: `${municipality} - ${ward}`,
         options: [
           {
             id: "water_infrastructure",
-            title: "Piped Water & Flush Toilets",
-            description: "Install household water connections and dignified sanitation",
+            title: `${ward} Piped Water & Flush Toilets`,
+            description: `Install household water connections and dignified sanitation in ${ward}`,
             icon: "🚰",
             votes: 2156
           },
           {
             id: "electricity_grid",
-            title: "Safe Electricity Connections",
-            description: "Replace illegal connections with prepaid meters",
+            title: `${ward} Safe Electricity Connections`,
+            description: `Replace illegal connections with prepaid meters in ${ward}`,
             icon: "⚡",
             votes: 1834
           },
@@ -226,8 +226,8 @@ const getCommunityTailoredAgendas = (municipality: string, ward: string) => {
     if (ward.includes("Sea Point") || ward.includes("Camps Bay") || ward.includes("Ward 2") || ward.includes("Ward 11")) {
       baseAgendas.push({
         id: "atlantic_seaboard_2024",
-        title: "Atlantic Seaboard Infrastructure - R25 Million",
-        description: "Enhance coastal infrastructure and sustainable development for high-density tourism area.",
+        title: `${municipality} Coastal Infrastructure for ${ward} - R25 Million`,
+        description: `Enhance coastal infrastructure and sustainable development for ${ward} high-density tourism area in ${municipality}.`,
         type: "municipal", 
         municipality: `${municipality} - ${ward}`,
         options: [
@@ -270,15 +270,15 @@ const getCommunityTailoredAgendas = (municipality: string, ward: string) => {
     if (ward.includes("Mitchells Plain") || ward.includes("Ward 25")) {
       baseAgendas.push({
         id: "mitchells_plain_2024",
-        title: "Mitchells Plain Youth & Safety - R10 Million",
-        description: "Community safety and youth development in established residential area with high youth population.",
+        title: `${municipality} Youth & Safety Initiative for ${ward} - R10 Million`,
+        description: `Community safety and youth development in ${ward}, ${municipality} - established residential area with high youth population.`,
         type: "municipal",
         municipality: `${municipality} - ${ward}`,
         options: [
           {
             id: "youth_centers",
-            title: "Youth Development Centers",
-            description: "Skills training and sports facilities for young people",
+            title: `${ward} Youth Development Centers`,
+            description: `Skills training and sports facilities for young people in ${ward}`,
             icon: "⚽",
             votes: 1789
           },
