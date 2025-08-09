@@ -31,6 +31,8 @@ interface User {
   isAdmin: boolean;
   municipality: string;
   ward: string;
+  idNumber: string;
+  voterID: string;
 }
 
 // Western Cape Municipalities
@@ -369,7 +371,7 @@ const Index = () => {
 
   useEffect(() => {
     // Check if user is logged in
-    const storedUser = localStorage.getItem("civiclink_user");
+    const storedUser = localStorage.getItem("myvote_user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     } else {
@@ -377,12 +379,12 @@ const Index = () => {
     }
 
     // Load agendas
-    const storedAgendas = localStorage.getItem("civiclink_agendas");
+    const storedAgendas = localStorage.getItem("myvote_agendas");
     if (storedAgendas) {
       setAgendas(JSON.parse(storedAgendas));
     } else {
       // Set default agendas with South African context
-      const storedUser = localStorage.getItem("civiclink_user");
+      const storedUser = localStorage.getItem("myvote_user");
       let municipalAgendas = [];
       if (storedUser) {
         const userData = JSON.parse(storedUser);
@@ -390,7 +392,7 @@ const Index = () => {
       }
       const defaultAgendas = [...defaultProvincialAgendas, ...municipalAgendas];
       setAgendas(defaultAgendas);
-      localStorage.setItem("civiclink_agendas", JSON.stringify(defaultAgendas));
+      localStorage.setItem("myvote_agendas", JSON.stringify(defaultAgendas));
     }
   }, []);
 
@@ -401,11 +403,11 @@ const Index = () => {
     const communityAgendas = getCommunityTailoredAgendas(userData.municipality, userData.ward);
     const updatedAgendas = [...defaultProvincialAgendas, ...communityAgendas];
     setAgendas(updatedAgendas);
-    localStorage.setItem("civiclink_agendas", JSON.stringify(updatedAgendas));
+    localStorage.setItem("myvote_agendas", JSON.stringify(updatedAgendas));
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("civiclink_user");
+    localStorage.removeItem("myvote_user");
     setUser(null);
     setAuthDialogOpen(true);
   };
@@ -418,7 +420,7 @@ const Index = () => {
             <div className="w-20 h-20 bg-gradient-ethereum rounded-full flex items-center justify-center mx-auto animate-pulse">
               <BeeIcon className="w-10 h-10" />
             </div>
-            <h1 className="text-2xl font-bold">Welcome to CivicLink</h1>
+            <h1 className="text-2xl font-bold">Welcome to MyVote SA</h1>
             <p className="text-muted-foreground">Connecting to secure authentication...</p>
           </div>
         </div>

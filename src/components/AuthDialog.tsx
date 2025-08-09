@@ -1,219 +1,377 @@
 import { useState } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { User } from "lucide-react";
 import { BeeIcon } from "@/components/BeeIcon";
+import { Copy, Check } from "lucide-react";
+
+interface User {
+  username: string;
+  isAdmin: boolean;
+  municipality: string;
+  ward: string;
+  idNumber: string;
+  voterID: string;
+}
 
 interface AuthDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onAuthSuccess: (user: { username: string; isAdmin: boolean; municipality: string; ward: string }) => void;
+  onAuthSuccess: (user: User) => void;
 }
 
+// Western Cape Municipalities
+const westernCapeMunicipalities = [
+  "City of Cape Town", "Stellenbosch", "Drakenstein", "Witzenberg", 
+  "Breede Valley", "Langeberg", "Swellendam", "Theewaterskloof",
+  "Overstrand", "Cape Agulhas", "Swartland", "Saldanha Bay",
+  "Bergrivier", "Cederberg", "Matzikama", "Bitou", "Knysna",
+  "George", "Hessequa", "Oudtshoorn", "Kannaland", "Laingsburg",
+  "Prince Albert", "Beaufort West", "Central Karoo"
+];
+
+// Generate ward options based on municipality
+const getWardOptions = (municipality: string) => {
+  if (municipality === "City of Cape Town") {
+    return [
+      "Ward 1 - City Bowl", "Ward 2 - Sea Point", "Ward 3 - Green Point",
+      "Ward 11 - Camps Bay", "Ward 23 - Langa", "Ward 25 - Mitchells Plain",
+      "Ward 26 - Khayelitsha East", "Ward 27 - Khayelitsha West",
+      "Ward 54 - Bonteheuwel", "Ward 77 - Gugulethu"
+    ];
+  } else {
+    return [`Ward 1 - ${municipality} Central`, `Ward 2 - ${municipality} East`, `Ward 3 - ${municipality} West`];
+  }
+};
+
+// Generate voter ID
+const generateVoterID = (idNumber: string, municipality: string) => {
+  const prefix = municipality === "City of Cape Town" ? "CPT" : "WC";
+  const hash = idNumber.split('').reduce((a, b) => a + b.charCodeAt(0), 0);
+  return `${prefix}${hash.toString().padStart(6, '0')}`;
+};
+
 export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProps) => {
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [username, setUsername] = useState("");
+  const [idNumber, setIdNumber] = useState("");
+  const [voterID, setVoterID] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [ward, setWard] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [generatedVoterID, setGeneratedVoterID] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [copiedVoterID, setCopiedVoterID] = useState(false);
   const { toast } = useToast();
 
-  // Western Cape Municipalities
-  const westernCapeMunicipalities = [
-    "City of Cape Town", "Stellenbosch", "Drakenstein", "Witzenberg", 
-    "Breede Valley", "Langeberg", "Swellendam", "Theewaterskloof",
-    "Overstrand", "Cape Agulhas", "Swartland", "Saldanha Bay",
-    "Bergrivier", "Cederberg", "Matzikama", "Bitou", "Knysna",
-    "George", "Hessequa", "Oudtshoorn", "Kannaland", "Laingsburg",
-    "Prince Albert", "Beaufort West", "Central Karoo"
-  ];
+  const validateIDNumber = (id: string) => {
+    const num = parseInt(id);
+    return num >= 111 && num <= 100000;
+  };
 
-  // Cape Town Areas/Wards
-  const capeAreasList = [
-    "Ward 1 - City Bowl, Gardens", "Ward 2 - Sea Point, Bantry Bay", 
-    "Ward 3 - Green Point, De Waterkant", "Ward 4 - Woodstock, Salt River",
-    "Ward 5 - Observatory, Mowbray", "Ward 6 - Rondebosch, Newlands",
-    "Ward 7 - Claremont, Kenilworth", "Ward 8 - Wynberg, Plumstead",
-    "Ward 9 - Constantia, Bishopscourt", "Ward 10 - Hout Bay",
-    "Ward 11 - Camps Bay, Clifton", "Ward 12 - Atlantic Seaboard",
-    "Ward 13 - Bellville South", "Ward 14 - Parow, Elsies River",
-    "Ward 15 - Goodwood, Elsies River", "Ward 16 - Thornton, Bonteheuwel",
-    "Ward 17 - Bishop Lavis, Vasco", "Ward 18 - Belhar, Delft",
-    "Ward 19 - Delft South", "Ward 20 - Eerste River, Khayelitsha",
-    "Ward 21 - Nyanga, Crossroads", "Ward 22 - Gugulethu",
-    "Ward 23 - Langa, Bonteheuwel", "Ward 24 - Manenberg, Hanover Park",
-    "Ward 25 - Mitchells Plain", "Ward 26 - Khayelitsha Site B",
-    "Ward 27 - Khayelitsha Site C", "Ward 28 - Harare, Khayelitsha",
-    "Ward 29 - Mfuleni", "Ward 30 - Kraaifontein",
-    "Ward 31 - Blue Downs, Scottsdene", "Ward 32 - Brackenfell",
-    "Ward 33 - Durbanville", "Ward 34 - Bellville, Tygerberg",
-    "Ward 35 - Kuils River", "Ward 36 - Strand, Somerset West",
-    "Ward 37 - Gordon's Bay, Strand", "Ward 38 - Stellenbosch Rural",
-    "Ward 39 - Atlantis", "Ward 40 - Melkbosstrand",
-    "Ward 41 - Table View, Blouberg", "Ward 42 - Milnerton",
-    "Ward 43 - Century City, Goodwood", "Ward 44 - Pinelands, Langa"
-  ];
-
-  const handleLogin = async () => {
-    if (!username.trim()) {
+  const handleRegister = async () => {
+    if (!username.trim() || !idNumber || !municipality || !ward) {
       toast({
-        title: "Username required",
-        description: "Please enter a username to continue",
+        title: "Missing information",
+        description: "Please fill in all fields",
         variant: "destructive"
       });
       return;
     }
 
-    if (!municipality) {
+    if (!validateIDNumber(idNumber)) {
       toast({
-        title: "Municipality required",
-        description: "Please select your municipality",
+        title: "Invalid ID Number",
+        description: "ID number must be between 111 and 100000",
         variant: "destructive"
       });
       return;
     }
 
-    if (!ward) {
+    // Check if user already exists
+    const existingUsers = JSON.parse(localStorage.getItem("myvote_users") || "[]");
+    if (existingUsers.some((u: any) => u.idNumber === idNumber)) {
       toast({
-        title: "Area selection required",
-        description: "Please select your area/ward",
+        title: "User already exists",
+        description: "This ID number is already registered. Please login instead.",
         variant: "destructive"
       });
       return;
     }
 
-    setLoading(true);
+    setIsLoading(true);
     
-    // Simulate auth delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // Simulate registration delay
+    await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const isAdmin = username.toLowerCase() === "tkay";
-    const user = { 
-      username: username.trim(), 
-      isAdmin, 
+    const newVoterID = generateVoterID(idNumber, municipality);
+    setGeneratedVoterID(newVoterID);
+    
+    const user: User = {
+      username: username.trim(),
+      isAdmin: username.toLowerCase() === "admin",
       municipality,
-      ward
+      ward,
+      idNumber,
+      voterID: newVoterID
     };
+
+    // Store user data
+    existingUsers.push(user);
+    localStorage.setItem("myvote_users", JSON.stringify(existingUsers));
+    localStorage.setItem("myvote_user", JSON.stringify(user));
     
-    // Store in localStorage
-    localStorage.setItem("civiclink_user", JSON.stringify(user));
+    setIsLoading(false);
     
     toast({
-      title: isAdmin ? "Admin Access Granted" : "Welcome to CivicLink",
-      description: isAdmin 
-        ? `Administrative access for ${municipality}` 
-        : `Ready to vote for ${ward}`,
+      title: "Registration successful!",
+      description: `Welcome ${user.username}! Your Voter ID has been generated.`
     });
+  };
+
+  const handleLogin = async () => {
+    if (!voterID.trim()) {
+      toast({
+        title: "Missing Voter ID",
+        description: "Please enter your Voter ID",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
     
+    // Check if user exists
+    const existingUsers = JSON.parse(localStorage.getItem("myvote_users") || "[]");
+    const user = existingUsers.find((u: any) => u.voterID === voterID);
+    
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    if (!user) {
+      toast({
+        title: "Invalid Voter ID",
+        description: "Voter ID not found. Please check your ID or register.",
+        variant: "destructive"
+      });
+      setIsLoading(false);
+      return;
+    }
+    
+    localStorage.setItem("myvote_user", JSON.stringify(user));
+    
+    setIsLoading(false);
     onAuthSuccess(user);
     onOpenChange(false);
-    setLoading(false);
+    
+    toast({
+      title: "Login successful",
+      description: `Welcome back ${user.username}! Ready to participate in Western Cape democracy.`
+    });
   };
+
+  const copyVoterID = () => {
+    navigator.clipboard.writeText(generatedVoterID);
+    setCopiedVoterID(true);
+    setTimeout(() => setCopiedVoterID(false), 2000);
+    toast({
+      title: "Voter ID copied!",
+      description: "Save this ID to login in the future"
+    });
+  };
+
+  const proceedAfterRegistration = () => {
+    const existingUsers = JSON.parse(localStorage.getItem("myvote_users") || "[]");
+    const user = existingUsers.find((u: any) => u.voterID === generatedVoterID);
+    if (user) {
+      onAuthSuccess(user);
+      onOpenChange(false);
+    }
+  };
+
+  if (generatedVoterID) {
+    return (
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader className="text-center space-y-4">
+            <div className="w-16 h-16 bg-gradient-ethereum rounded-full flex items-center justify-center mx-auto animate-trust-pulse">
+              <BeeIcon className="w-8 h-8 text-white" />
+            </div>
+            <DialogTitle className="text-2xl">Registration Complete!</DialogTitle>
+            <DialogDescription>
+              Your Voter ID has been generated. Save this ID to login in the future.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 pt-4">
+            <div className="p-4 bg-primary/10 rounded-lg border-2 border-primary/20">
+              <Label className="text-sm font-medium">Your Voter ID</Label>
+              <div className="flex items-center gap-2 mt-2">
+                <code className="flex-1 text-lg font-mono bg-background p-2 rounded border">
+                  {generatedVoterID}
+                </code>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={copyVoterID}
+                  className="shrink-0"
+                >
+                  {copiedVoterID ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                </Button>
+              </div>
+            </div>
+            
+            <div className="text-sm text-muted-foreground bg-amber-50 p-3 rounded border border-amber-200">
+              <strong>Important:</strong> Save this Voter ID safely. You will need it to login and access your voting rights.
+            </div>
+            
+            <Button onClick={proceedAfterRegistration} className="w-full" size="lg">
+              Continue to MyVote SA
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    );
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-gradient-trust border-primary/20">
+      <DialogContent className="sm:max-w-md">
         <DialogHeader className="text-center space-y-4">
-          <div className="w-16 h-16 bg-gradient-ethereum rounded-full flex items-center justify-center mx-auto">
-            <User className="w-8 h-8 text-white" />
+          <div className="w-16 h-16 bg-gradient-ethereum rounded-full flex items-center justify-center mx-auto animate-trust-pulse">
+            <BeeIcon className="w-8 h-8 text-white" />
           </div>
-          <DialogTitle className="text-2xl">Join CivicLink Western Cape</DialogTitle>
-          <p className="text-muted-foreground">
-            Democratic participation for Western Cape residents • Powered by <span className="text-primary font-semibold">Ethereum</span>
-          </p>
+          <DialogTitle className="text-2xl">Welcome to MyVote SA</DialogTitle>
+          <DialogDescription>
+            Secure blockchain voting for South African communities.
+            Join the democratic process in the Western Cape.
+          </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input
-              id="username"
-              placeholder="Enter your username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="bg-white/50"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="municipality">Municipality</Label>
-            <select
-              id="municipality"
-              value={municipality}
-              onChange={(e) => {
-                setMunicipality(e.target.value);
-                setWard(""); // Reset ward when municipality changes
-              }}
-              className="w-full p-3 rounded-md border border-input bg-white/50 text-foreground"
-              required
+        <Tabs value={authMode} onValueChange={(value) => setAuthMode(value as "login" | "register")} className="pt-4">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="register">Register</TabsTrigger>
+          </TabsList>
+          
+          <TabsContent value="login" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="voterID">Voter ID</Label>
+              <Input
+                id="voterID"
+                placeholder="Enter your Voter ID (e.g., CPT123456)"
+                value={voterID}
+                onChange={(e) => setVoterID(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            
+            <Button 
+              onClick={handleLogin} 
+              className="w-full" 
+              size="lg"
+              disabled={isLoading || !voterID.trim()}
             >
-              <option value="">Select your municipality...</option>
-              {westernCapeMunicipalities.map((muni) => (
-                <option key={muni} value={muni}>
-                  {muni}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="ward">Your Area/Ward</Label>
-            <select
-              id="ward"
-              value={ward}
-              onChange={(e) => setWard(e.target.value)}
-              className="w-full p-3 rounded-md border border-input bg-white/50 text-foreground"
-              required
-              disabled={!municipality}
-            >
-              <option value="">
-                {municipality === "City of Cape Town" 
-                  ? "Select your Cape Town area/ward..." 
-                  : municipality 
-                    ? `Select your ${municipality} area/ward...`
-                    : "First select your municipality"}
-              </option>
-              {municipality === "City of Cape Town" && capeAreasList.map((area) => (
-                <option key={area} value={area}>
-                  {area}
-                </option>
-              ))}
-              {municipality && municipality !== "City of Cape Town" && (
-                <>
-                  <option value={`${municipality} Ward 1`}>{municipality} Ward 1</option>
-                  <option value={`${municipality} Ward 2`}>{municipality} Ward 2</option>
-                  <option value={`${municipality} Ward 3`}>{municipality} Ward 3</option>
-                  <option value={`${municipality} Ward 4`}>{municipality} Ward 4</option>
-                  <option value={`${municipality} Ward 5`}>{municipality} Ward 5</option>
-                </>
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-trust-pulse">
+                    <BeeIcon className="w-4 h-4" />
+                  </div>
+                  Logging in...
+                </div>
+              ) : (
+                "Login to MyVote SA"
               )}
-            </select>
-          </div>
+            </Button>
+          </TabsContent>
           
-          <Button 
-            onClick={handleLogin} 
-            disabled={loading}
-            className="w-full gap-2 shadow-ethereum"
-            size="lg"
-          >
-            {loading ? (
-              "Connecting..."
-            ) : (
-              <>
-                <BeeIcon className="w-4 h-4" />
-                Enter CivicLink
-              </>
+          <TabsContent value="register" className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="username">Full Name</Label>
+              <Input
+                id="username"
+                placeholder="Enter your full name"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                disabled={isLoading}
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="idNumber">ID Number</Label>
+              <Input
+                id="idNumber"
+                type="number"
+                placeholder="Enter ID (111 - 100000)"
+                value={idNumber}
+                onChange={(e) => setIdNumber(e.target.value)}
+                disabled={isLoading}
+                min="111"
+                max="100000"
+              />
+            </div>
+            
+            <div className="space-y-2">
+              <Label htmlFor="municipality">Municipality</Label>
+              <Select value={municipality} onValueChange={setMunicipality} disabled={isLoading}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select your municipality" />
+                </SelectTrigger>
+                <SelectContent>
+                  {westernCapeMunicipalities.map((muni) => (
+                    <SelectItem key={muni} value={muni}>
+                      {muni}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {municipality && (
+              <div className="space-y-2">
+                <Label htmlFor="ward">Ward</Label>
+                <Select value={ward} onValueChange={setWard} disabled={isLoading}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select your ward" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getWardOptions(municipality).map((wardOption) => (
+                      <SelectItem key={wardOption} value={wardOption}>
+                        {wardOption}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             )}
-          </Button>
-          
-          <div className="text-xs text-center text-muted-foreground space-y-1">
-            <p>🔒 Secured by Ethereum blockchain</p>
-            <p>✨ Admin access: Use username "tkay"</p>
-            <p>🏛️ Western Cape democratic participation</p>
-          </div>
-        </div>
+            
+            <Button 
+              onClick={handleRegister} 
+              className="w-full" 
+              size="lg"
+              disabled={isLoading || !username.trim() || !idNumber || !municipality || !ward}
+            >
+              {isLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="animate-trust-pulse">
+                    <BeeIcon className="w-4 h-4" />
+                  </div>
+                  Registering...
+                </div>
+              ) : (
+                "Register for MyVote SA"
+              )}
+            </Button>
+          </TabsContent>
+        </Tabs>
       </DialogContent>
     </Dialog>
   );

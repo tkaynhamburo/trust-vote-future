@@ -51,14 +51,14 @@ export const AdminPanel = ({ agendas: initialAgendas, setAgendas: setParentAgend
 
   useEffect(() => {
     // Load agendas from localStorage
-    const stored = localStorage.getItem("civiclink_agendas");
+    const stored = localStorage.getItem("myvote_agendas");
     if (stored) {
       setAgendas(JSON.parse(stored));
     }
   }, []);
 
   const saveAgendas = (updatedAgendas: VotingAgenda[]) => {
-    localStorage.setItem("civiclink_agendas", JSON.stringify(updatedAgendas));
+    localStorage.setItem("myvote_agendas", JSON.stringify(updatedAgendas));
     setAgendas(updatedAgendas);
     setParentAgendas(updatedAgendas);
   };

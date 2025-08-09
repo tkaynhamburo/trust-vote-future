@@ -28,7 +28,7 @@ export const CivicHeader = ({ user, notifications, onLogout }: CivicHeaderProps)
                 <BeeIcon className="w-6 h-6" />
               </div>
               <div className="text-white">
-                <h1 className="text-xl font-bold">CivicLink</h1>
+                <h1 className="text-xl font-bold">MyVote SA</h1>
                 <p className="text-xs text-white/80 flex items-center gap-1">
                   Powered by 
                   <span className="font-semibold text-accent">Ethereum</span>
