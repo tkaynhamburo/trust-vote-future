@@ -314,23 +314,23 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
       candidates: [
         {
           id: `${ward}_candidate_1`,
-          name: "Nomsa Mthembu",
+          name: "Micaiah Nhamburo",
           position: "Councillor Candidate",
           party: "Richfield Cape Town Campus A",
           experience: "Community organizer for 6 years, small business owner, youth development coordinator",
           manifesto: "Fight for free basic services, job creation for youth, and improved community safety",
-          avatar: "/lovable-uploads/a692f9ea-d94a-4fe5-bf41-8d2d93ab65d8.png",
+          avatar: "/lovable-uploads/2b92892d-45bc-4fe5-8aa8-f694d02b4188.png",
           votes: 1245,
           incumbent: false
         },
         {
           id: `${ward}_candidate_2`,
-          name: "Johan van der Merwe",
+          name: "Munyaradzi Mudavanhu",
           position: "Councillor Candidate", 
           party: "Richfield Cape Town Campus B",
           experience: "Current ward councillor (incumbent), 4 years experience, background in local government",
           manifesto: "Continue infrastructure improvements, maintain service delivery standards, strengthen community partnerships",
-          avatar: "/lovable-uploads/a692f9ea-d94a-4fe5-bf41-8d2d93ab65d8.png",
+          avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
           votes: 1567,
           incumbent: true
         }
