@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CivicHeader } from "@/components/CivicHeader";
 import { VotingCard } from "@/components/VotingCard";
+import { NominationCard } from "@/components/NominationCard";
 import { EngagementHub } from "@/components/EngagementHub";
 import { VoteVerification } from "@/components/VoteVerification";
 import { AuthDialog } from "@/components/AuthDialog";
@@ -43,6 +44,132 @@ const westernCapeMunicipalities = [
   "Bergrivier", "Cederberg", "Matzikama", "Bitou", "Knysna",
   "George", "Hessequa", "Oudtshoorn", "Kannaland", "Laingsburg",
   "Prince Albert", "Beaufort West", "Central Karoo"
+];
+
+// Leadership Nominations for Provincial and Municipal Positions
+const leadershipNominations = [
+  {
+    id: "provincial_premier_2024",
+    title: "Western Cape Premier Election 2024",
+    description: "Select the next Premier of Western Cape Province. The Premier leads provincial government and oversees all municipal coordination across the province.",
+    position: "Premier of Western Cape",
+    type: "provincial",
+    municipality: "Western Cape Province",
+    candidates: [
+      {
+        id: "micaiah_nhamburo",
+        name: "Micaiah Nhamburo",
+        position: "Premier Candidate",
+        party: "Democratic Alliance",
+        experience: "15 years in provincial administration, former Mayor of Stellenbosch, holds Master's in Public Administration",
+        manifesto: "Focus on rural development, youth employment, and digital transformation of government services across Western Cape",
+        avatar: "/lovable-uploads/2b92892d-45bc-4fe5-8aa8-f694d02b4188.png",
+        votes: 45623,
+        incumbent: false
+      },
+      {
+        id: "munyaradzi_mudavanhu",
+        name: "Munyaradzi Mudavanhu",
+        position: "Premier Candidate", 
+        party: "African National Congress",
+        experience: "12 years as Municipal Manager in George, extensive background in community development and infrastructure planning",
+        manifesto: "Prioritize housing delivery, public transport expansion, and renewable energy projects to create sustainable jobs",
+        avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
+        votes: 38947,
+        incumbent: false
+      }
+    ],
+    timeRemaining: "15 days remaining",
+    totalVotes: 84570,
+    active: true,
+    createdAt: new Date().toISOString()
+  }
+];
+
+// Additional South African Provincial Issues
+const additionalProvincialIssues = [
+  {
+    id: "provincial_healthcare_2024",
+    title: "Western Cape Healthcare Crisis Response - R1.2 Billion Emergency Budget",
+    description: "Address critical healthcare shortages across Western Cape public hospitals and clinics. Focus on rural areas and township communities with limited access.",
+    type: "provincial",
+    municipality: "Western Cape Province",
+    options: [
+      {
+        id: "mobile_clinics",
+        title: "Mobile Clinic Fleet Expansion",
+        description: "Deploy 50 new mobile clinics to serve rural farming communities and informal settlements",
+        icon: "🚑",
+        votes: 5234
+      },
+      {
+        id: "specialist_recruitment",
+        title: "Specialist Doctor Recruitment",
+        description: "Recruit doctors from Zimbabwe, Nigeria, and Cuba to address critical specialist shortages",
+        icon: "👩‍⚕️",
+        votes: 4567
+      },
+      {
+        id: "chronic_medication",
+        title: "Chronic Medication Access",
+        description: "Establish medication pickup points in taxi ranks and community centers",
+        icon: "💊",
+        votes: 3890
+      },
+      {
+        id: "mental_health",
+        title: "Community Mental Health Program",
+        description: "Train traditional healers and community leaders in mental health first aid",
+        icon: "🧠",
+        votes: 2345
+      }
+    ],
+    timeRemaining: "9 days remaining",
+    totalVotes: 16036,
+    active: true,
+    createdAt: new Date().toISOString()
+  },
+  {
+    id: "provincial_drought_2024",
+    title: "Day Zero Prevention - Water Security R900 Million Investment",
+    description: "Prevent another Cape Town water crisis through province-wide water security measures and drought-resistant infrastructure.",
+    type: "provincial",
+    municipality: "Western Cape Province",
+    options: [
+      {
+        id: "desalination_plants",
+        title: "Small-Scale Desalination Plants",
+        description: "Build 15 community-sized desalination facilities along Western Cape coast",
+        icon: "🌊",
+        votes: 3456
+      },
+      {
+        id: "groundwater_management",
+        title: "Groundwater Harvesting & Management",
+        description: "Drill sustainable boreholes and implement smart groundwater monitoring",
+        icon: "💧",
+        votes: 4123
+      },
+      {
+        id: "rainwater_harvesting",
+        title: "Community Rainwater Harvesting",
+        description: "Install rainwater tanks in schools, clinics, and community centers",
+        icon: "☔",
+        votes: 2890
+      },
+      {
+        id: "water_recycling",
+        title: "Wastewater Treatment Upgrade",
+        description: "Upgrade all municipal wastewater plants for safe water recycling",
+        icon: "♻️",
+        votes: 2678
+      }
+    ],
+    timeRemaining: "11 days remaining",
+    totalVotes: 13147,
+    active: true,
+    createdAt: new Date().toISOString()
+  }
 ];
 
 // Default Provincial Voting Agendas
@@ -128,8 +255,95 @@ const defaultProvincialAgendas = [
     totalVotes: 12404,
     active: true,
     createdAt: new Date().toISOString()
-  }
+  },
+  ...additionalProvincialIssues
 ];
+
+// Get Municipal Leader Nominations for user's area
+const getMunicipalNominations = (municipality: string, ward: string) => {
+  const nominations = [];
+  
+  if (municipality === "City of Cape Town") {
+    nominations.push({
+      id: "cape_town_mayor_2024",
+      title: `${municipality} Mayoral Election 2024`,
+      description: `Select the next Executive Mayor of ${municipality}. The Mayor oversees municipal services, budget allocation, and community development across all Cape Town wards.`,
+      position: "Executive Mayor",
+      type: "municipal",
+      municipality: municipality,
+      candidates: [
+        {
+          id: "micaiah_nhamburo_mayor",
+          name: "Micaiah Nhamburo",
+          position: "Mayoral Candidate",
+          party: "Democratic Alliance",
+          experience: "8 years as Ward Councillor, former Deputy Mayor of Stellenbosch, Civil Engineering background",
+          manifesto: "Focus on service delivery in townships, fixing water infrastructure, and creating youth employment opportunities",
+          avatar: "/lovable-uploads/2b92892d-45bc-4fe5-8aa8-f694d02b4188.png",
+          votes: 23567,
+          incumbent: false
+        },
+        {
+          id: "munyaradzi_mudavanhu_mayor",
+          name: "Munyaradzi Mudavanhu",
+          position: "Mayoral Candidate",
+          party: "African National Congress",
+          experience: "10 years as Community Development Manager, Masters in Urban Planning, housing delivery specialist",
+          manifesto: "Accelerate housing delivery, improve public transport to townships, and strengthen community safety partnerships",
+          avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
+          votes: 19234,
+          incumbent: false
+        }
+      ],
+      timeRemaining: "18 days remaining",
+      totalVotes: 42801,
+      active: true,
+      createdAt: new Date().toISOString()
+    });
+  }
+  
+  // Add ward councillor nominations for specific wards
+  if (ward.includes("Ward")) {
+    nominations.push({
+      id: `${ward.toLowerCase().replace(/\s+/g, '_')}_councillor_2024`,
+      title: `${ward} Councillor Election 2024`,
+      description: `Select your local ward councillor for ${ward} in ${municipality}. Your councillor represents local issues in municipal council.`,
+      position: "Ward Councillor",
+      type: "municipal",
+      municipality: `${municipality} - ${ward}`,
+      candidates: [
+        {
+          id: `${ward}_candidate_1`,
+          name: "Nomsa Mthembu",
+          position: "Councillor Candidate",
+          party: "Economic Freedom Fighters",
+          experience: "Community organizer for 6 years, small business owner, youth development coordinator",
+          manifesto: "Fight for free basic services, job creation for youth, and improved community safety",
+          avatar: "/lovable-uploads/a692f9ea-d94a-4fe5-bf41-8d2d93ab65d8.png",
+          votes: 1245,
+          incumbent: false
+        },
+        {
+          id: `${ward}_candidate_2`,
+          name: "Johan van der Merwe",
+          position: "Councillor Candidate", 
+          party: "Democratic Alliance",
+          experience: "Current ward councillor (incumbent), 4 years experience, background in local government",
+          manifesto: "Continue infrastructure improvements, maintain service delivery standards, strengthen community partnerships",
+          avatar: "/lovable-uploads/a692f9ea-d94a-4fe5-bf41-8d2d93ab65d8.png",
+          votes: 1567,
+          incumbent: true
+        }
+      ],
+      timeRemaining: "18 days remaining", 
+      totalVotes: 2812,
+      active: true,
+      createdAt: new Date().toISOString()
+    });
+  }
+  
+  return nominations;
+};
 
 // Community-tailored Municipal Voting Agendas
 const getCommunityTailoredAgendas = (municipality: string, ward: string) => {
@@ -367,6 +581,7 @@ const Index = () => {
   const [user, setUser] = useState<User | null>(null);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const [agendas, setAgendas] = useState([]);
+  const [nominations, setNominations] = useState([]);
   const [votingType, setVotingType] = useState<"provincial" | "municipal">("provincial");
 
   useEffect(() => {
@@ -378,8 +593,10 @@ const Index = () => {
       setAuthDialogOpen(true);
     }
 
-    // Load agendas
+    // Load agendas and nominations
     const storedAgendas = localStorage.getItem("myvote_agendas");
+    const storedNominations = localStorage.getItem("myvote_nominations");
+    
     if (storedAgendas) {
       setAgendas(JSON.parse(storedAgendas));
     } else {
@@ -394,6 +611,22 @@ const Index = () => {
       setAgendas(defaultAgendas);
       localStorage.setItem("myvote_agendas", JSON.stringify(defaultAgendas));
     }
+    
+    if (storedNominations) {
+      setNominations(JSON.parse(storedNominations));
+    } else {
+      // Set default nominations
+      const storedUser = localStorage.getItem("myvote_user");
+      let userNominations = [];
+      if (storedUser) {
+        const userData = JSON.parse(storedUser);
+        userNominations = [...leadershipNominations, ...getMunicipalNominations(userData.municipality, userData.ward)];
+      } else {
+        userNominations = leadershipNominations;
+      }
+      setNominations(userNominations);
+      localStorage.setItem("myvote_nominations", JSON.stringify(userNominations));
+    }
   }, []);
 
   const handleAuthSuccess = (userData: User) => {
@@ -404,6 +637,11 @@ const Index = () => {
     const updatedAgendas = [...defaultProvincialAgendas, ...communityAgendas];
     setAgendas(updatedAgendas);
     localStorage.setItem("myvote_agendas", JSON.stringify(updatedAgendas));
+    
+    // Update nominations with user-specific content
+    const userNominations = [...leadershipNominations, ...getMunicipalNominations(userData.municipality, userData.ward)];
+    setNominations(userNominations);
+    localStorage.setItem("myvote_nominations", JSON.stringify(userNominations));
   };
 
   const handleLogout = () => {
@@ -517,10 +755,14 @@ const Index = () => {
         {/* Main Dashboard */}
         <section>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-7' : 'grid-cols-6'} bg-white/50 backdrop-blur-sm`}>
+            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-8' : 'grid-cols-7'} bg-white/50 backdrop-blur-sm`}>
               <TabsTrigger value="dashboard" className="gap-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="hidden sm:inline">Dashboard</span>
+              </TabsTrigger>
+              <TabsTrigger value="leadership" className="gap-2">
+                <Crown className="w-4 h-4" />
+                <span className="hidden sm:inline">Leadership</span>
               </TabsTrigger>
               <TabsTrigger value="provincial" className="gap-2">
                 <Globe className="w-4 h-4" />
@@ -544,7 +786,7 @@ const Index = () => {
               </TabsTrigger>
               {user.isAdmin && (
                 <TabsTrigger value="admin" className="gap-2">
-                  <Crown className="w-4 h-4" />
+                  <Activity className="w-4 h-4" />
                   <span className="hidden sm:inline">Admin</span>
                 </TabsTrigger>
               )}
@@ -601,6 +843,56 @@ const Index = () => {
                   </Card>
                 )}
               </div>
+            </TabsContent>
+
+            <TabsContent value="leadership" className="space-y-6">
+              <div className="text-center space-y-2 mb-6">
+                <h2 className="text-2xl font-bold">Leadership Elections</h2>
+                <p className="text-muted-foreground">
+                  Vote for provincial and municipal leaders who will represent your interests
+                </p>
+              </div>
+              
+              <div className="grid gap-4 mb-6">
+                <Button
+                  variant={votingType === "provincial" ? "default" : "outline"}
+                  onClick={() => setVotingType("provincial")}
+                  className="w-full sm:w-auto"
+                >
+                  <Globe className="w-4 h-4 mr-2" />
+                  Provincial Leadership
+                </Button>
+                <Button
+                  variant={votingType === "municipal" ? "default" : "outline"}
+                  onClick={() => setVotingType("municipal")}
+                  className="w-full sm:w-auto"
+                >
+                  <Vote className="w-4 h-4 mr-2" />
+                  Municipal Leadership
+                </Button>
+              </div>
+              
+              {nominations.filter((n: any) => n.active && n.type === votingType).length > 0 ? (
+                <div className="space-y-6">
+                  {nominations.filter((n: any) => n.active && n.type === votingType).map((nomination: any) => (
+                    <NominationCard
+                      key={nomination.id}
+                      title={nomination.title}
+                      description={nomination.description}
+                      position={nomination.position}
+                      candidates={nomination.candidates}
+                      timeRemaining={nomination.timeRemaining}
+                      totalVotes={nomination.totalVotes}
+                      onVote={(candidateId) => console.log("Voted for candidate:", candidateId)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <Card className="text-center p-8">
+                  <Crown className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
+                  <p className="text-muted-foreground">No active {votingType} leadership elections at this time</p>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="provincial" className="space-y-6">
