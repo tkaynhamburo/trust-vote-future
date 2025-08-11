@@ -77,6 +77,17 @@ const leadershipNominations = [
         avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
         votes: 38947,
         incumbent: false
+      },
+      {
+        id: "thabo_mokoena",
+        name: "Thabo Mokoena",
+        position: "Premier Candidate",
+        party: "Richfield Cape Town Campus C",
+        experience: "Business leader, 6 years in public service, former municipal manager, MBA graduate",
+        manifesto: "Youth empowerment, digital transformation, sustainable development, and transparent governance",
+        avatar: "/lovable-uploads/d0674897-abc6-478c-9d32-bbaa439ced68.png",
+        votes: 28456,
+        incumbent: false
       }
     ],
     timeRemaining: "15 days remaining",
@@ -271,7 +282,7 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
       position: "Executive Mayor",
       type: "municipal",
       municipality: municipality,
-      candidates: [
+        candidates: [
         {
           id: "micaiah_nhamburo_mayor",
           name: "Micaiah Nhamburo",
@@ -292,6 +303,17 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
           manifesto: "Accelerate housing delivery, improve public transport to townships, and strengthen community safety partnerships",
           avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
           votes: 19234,
+          incumbent: false
+        },
+        {
+          id: "thabo_mokoena_mayor",
+          name: "Thabo Mokoena",
+          position: "Mayoral Candidate",
+          party: "Richfield Cape Town Campus C",
+          experience: "Entrepreneur, 4 years municipal experience, former ward committee member, engineering degree",
+          manifesto: "Smart city initiatives, youth employment programs, green energy projects, and citizen engagement",
+          avatar: "/lovable-uploads/d0674897-abc6-478c-9d32-bbaa439ced68.png",
+          votes: 15892,
           incumbent: false
         }
       ],
@@ -333,6 +355,17 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
           avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
           votes: 1567,
           incumbent: true
+        },
+        {
+          id: `${ward}_candidate_3`,
+          name: "Thabo Mokoena",
+          position: "Councillor Candidate",
+          party: "Richfield Cape Town Campus C",
+          experience: "Social worker, 3 years community activism, local business development coordinator",
+          manifesto: "Focus on social services, community upliftment programs, and participatory governance",
+          avatar: "/lovable-uploads/d0674897-abc6-478c-9d32-bbaa439ced68.png",
+          votes: 987,
+          incumbent: false
         }
       ],
       timeRemaining: "18 days remaining", 
