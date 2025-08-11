@@ -79,8 +79,8 @@ const leadershipNominations = [
         incumbent: false
       },
       {
-        id: "thabo_mokoena",
-        name: "Thabo Mokoena",
+        id: "ben_mbayo",
+        name: "Ben Mbayo",
         position: "Premier Candidate",
         party: "Richfield Cape Town Campus C",
         experience: "Business leader, 6 years in public service, former municipal manager, MBA graduate",
@@ -306,8 +306,8 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
           incumbent: false
         },
         {
-          id: "thabo_mokoena_mayor",
-          name: "Thabo Mokoena",
+          id: "ben_mbayo_mayor",
+          name: "Ben Mbayo",
           position: "Mayoral Candidate",
           party: "Richfield Cape Town Campus C",
           experience: "Entrepreneur, 4 years municipal experience, former ward committee member, engineering degree",
@@ -358,7 +358,7 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
         },
         {
           id: `${ward}_candidate_3`,
-          name: "Thabo Mokoena",
+          name: "Ben Mbayo",
           position: "Councillor Candidate",
           party: "Richfield Cape Town Campus C",
           experience: "Social worker, 3 years community activism, local business development coordinator",
