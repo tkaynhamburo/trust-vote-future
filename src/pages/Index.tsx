@@ -867,7 +867,7 @@ const Index = () => {
                   <VotingCard
                     key={agenda.id}
                     {...agenda}
-                    onVote={(optionId) => console.log("Voted for:", optionId)}
+                    onVote={(optionId) => {}}
                   />
                 ))}
                 {agendas.filter((a: any) => a.active && (a.municipality.includes("Cape Town") || a.municipality.includes(user.municipality))).length === 0 && (
@@ -916,7 +916,7 @@ const Index = () => {
                       candidates={nomination.candidates}
                       timeRemaining={nomination.timeRemaining}
                       totalVotes={nomination.totalVotes}
-                      onVote={(candidateId) => console.log("Voted for candidate:", candidateId)}
+                      onVote={(candidateId) => {}}
                     />
                   ))}
                 </div>
@@ -942,7 +942,7 @@ const Index = () => {
                     <VotingCard
                       key={agenda.id}
                       {...agenda}
-                      onVote={(optionId) => console.log("Voted for:", optionId)}
+                      onVote={(optionId) => {}}
                     />
                   ))}
                 </div>
@@ -968,7 +968,7 @@ const Index = () => {
                     <VotingCard
                       key={agenda.id}
                       {...agenda}
-                      onVote={(optionId) => console.log("Voted for:", optionId)}
+                      onVote={(optionId) => {}}
                     />
                   ))}
                 </div>

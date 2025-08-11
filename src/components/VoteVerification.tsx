@@ -54,8 +54,6 @@ export const VoteVerification = () => {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    // Show a quick notification (you could add toast here)
-    console.log("Transaction ID copied to clipboard");
   };
 
   const truncateHash = (hash: string) => {
