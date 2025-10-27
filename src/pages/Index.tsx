@@ -3,9 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CivicHeader } from "@/components/CivicHeader";
-import { VotingCard } from "@/components/VotingCard";
 import { NominationCard } from "@/components/NominationCard";
-import { EngagementHub } from "@/components/EngagementHub";
 import { VoteVerification } from "@/components/VoteVerification";
 import { AuthDialog } from "@/components/AuthDialog";
 import { AdminPanel } from "@/components/AdminPanel";
@@ -13,11 +11,9 @@ import { NotificationCenter } from "@/components/NotificationCenter";
 import { 
   Vote, 
   Users, 
-  Globe, 
   TrendingUp, 
   CheckCircle,
   ArrowRight,
-  Smartphone,
   Lock,
   Crown,
   Activity,
@@ -378,247 +374,13 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
   return nominations;
 };
 
-// Community-tailored Municipal Voting Agendas
-const getCommunityTailoredAgendas = (municipality: string, ward: string) => {
-  const baseAgendas = [];
-  
-  // Cape Town specific agendas
-  if (municipality === "City of Cape Town") {
-    if (ward.includes("Langa") || ward.includes("Bonteheuwel") || ward.includes("Ward 23")) {
-      baseAgendas.push({
-        id: "cpt_housing_2024",
-        title: `${municipality} Housing Development for ${ward} - R15 Million`,
-        description: `Address housing shortage in ${ward} and surrounding ${municipality} townships. Focus on upgrading existing communities while preserving cultural heritage.`,
-        type: "municipal",
-        municipality: `${municipality} - ${ward}`,
-        options: [
-          {
-            id: "social_housing",
-            title: `${municipality} Social Housing Development`,
-            description: `Build 200 subsidized units in ${ward} with community gardens`,
-            icon: "🏠",
-            votes: 1247
-          },
-          {
-            id: "hostel_upgrade",
-            title: `${ward} Hostel Modernization`,
-            description: `Convert old hostels in ${ward} into family-friendly housing`,
-            icon: "🏢",
-            votes: 856
-          },
-          {
-            id: "community_facilities",
-            title: `${ward} Community Center Expansion`,
-            description: `Build multipurpose community halls and libraries in ${ward}`,
-            icon: "🏛️",
-            votes: 678
-          },
-          {
-            id: "heritage_preservation",
-            title: "Heritage Housing Project",
-            description: "Preserve historical buildings while adding modern amenities",
-            icon: "🏺",
-            votes: 423
-          }
-        ],
-        timeRemaining: "5 days remaining",
-        totalVotes: 3204,
-        active: true,
-        createdAt: new Date().toISOString()
-      });
-    }
-    
-    if (ward.includes("Khayelitsha") || ward.includes("Ward 26") || ward.includes("Ward 27")) {
-      baseAgendas.push({
-        id: "khayelitsha_services_2024",
-        title: `${municipality} Essential Services for ${ward} - R12 Million`, 
-        description: `Critical infrastructure for ${ward} informal settlements in ${municipality}. Prioritize basic dignity and safety for all residents.`,
-        type: "municipal",
-        municipality: `${municipality} - ${ward}`,
-        options: [
-          {
-            id: "water_infrastructure",
-            title: `${ward} Piped Water & Flush Toilets`,
-            description: `Install household water connections and dignified sanitation in ${ward}`,
-            icon: "🚰",
-            votes: 2156
-          },
-          {
-            id: "electricity_grid",
-            title: `${ward} Safe Electricity Connections`,
-            description: `Replace illegal connections with prepaid meters in ${ward}`,
-            icon: "⚡",
-            votes: 1834
-          },
-          {
-            id: "gravel_roads",
-            title: "All-Weather Road Access",
-            description: "Gravel roads and stormwater drainage for wet season access",
-            icon: "🛣️",
-            votes: 1623
-          },
-          {
-            id: "health_safety",
-            title: "Mobile Clinic & Fire Station",
-            description: "Weekly health services and emergency response capacity",
-            icon: "🚑",
-            votes: 1089
-          }
-        ],
-        timeRemaining: "7 days remaining",
-        totalVotes: 6702,
-        active: true,
-        createdAt: new Date().toISOString()
-      });
-    }
-
-    if (ward.includes("Sea Point") || ward.includes("Camps Bay") || ward.includes("Ward 2") || ward.includes("Ward 11")) {
-      baseAgendas.push({
-        id: "atlantic_seaboard_2024",
-        title: `${municipality} Coastal Infrastructure for ${ward} - R25 Million`,
-        description: `Enhance coastal infrastructure and sustainable development for ${ward} high-density tourism area in ${municipality}.`,
-        type: "municipal", 
-        municipality: `${municipality} - ${ward}`,
-        options: [
-          {
-            id: "coastal_protection",
-            title: "Coastal Erosion Protection", 
-            description: "Build sea walls and sand stabilization systems",
-            icon: "🌊",
-            votes: 1456
-          },
-          {
-            id: "green_transport",
-            title: "Electric Bus & Cycling Lanes",
-            description: "Sustainable transport corridors for residents and tourists",
-            icon: "🚌",
-            votes: 1234
-          },
-          {
-            id: "waste_recycling",
-            title: "Zero-Waste Initiative",
-            description: "Advanced recycling and composting systems",
-            icon: "♻️",
-            votes: 987
-          },
-          {
-            id: "affordable_integration",
-            title: "Affordable Housing Integration",
-            description: "Mixed-income housing to prevent displacement",
-            icon: "🏘️",
-            votes: 678
-          }
-        ],
-        timeRemaining: "10 days remaining",
-        totalVotes: 4355,
-        active: true,
-        createdAt: new Date().toISOString()
-      });
-    }
-
-    if (ward.includes("Mitchells Plain") || ward.includes("Ward 25")) {
-      baseAgendas.push({
-        id: "mitchells_plain_2024",
-        title: `${municipality} Youth & Safety Initiative for ${ward} - R10 Million`,
-        description: `Community safety and youth development in ${ward}, ${municipality} - established residential area with high youth population.`,
-        type: "municipal",
-        municipality: `${municipality} - ${ward}`,
-        options: [
-          {
-            id: "youth_centers",
-            title: `${ward} Youth Development Centers`,
-            description: `Skills training and sports facilities for young people in ${ward}`,
-            icon: "⚽",
-            votes: 1789
-          },
-          {
-            id: "community_policing",
-            title: "Community Safety Program",
-            description: "Neighborhood watch and improved street lighting",
-            icon: "🚨",
-            votes: 1567
-          },
-          {
-            id: "small_business",
-            title: "Small Business Incubators",
-            description: "Support local entrepreneurs and job creation",
-            icon: "💼",
-            votes: 1234
-          },
-          {
-            id: "transport_hubs",
-            title: "Safe Transport Hubs",
-            description: "Secure taxi ranks and bus stops with CCTV",
-            icon: "🚐",
-            votes: 945
-          }
-        ],
-        timeRemaining: "6 days remaining",
-        totalVotes: 5535,
-        active: true,
-        createdAt: new Date().toISOString()
-      });
-    }
-  }
-
-  // Other municipalities - generic rural/small town issues
-  else {
-    baseAgendas.push({
-      id: `${municipality.toLowerCase().replace(/\s+/g, '_')}_rural_2024`,
-      title: `${municipality} Rural Development - R6 Million`,
-      description: `Essential services and economic development for ${municipality}. Focus on agriculture, tourism, and basic infrastructure.`,
-      type: "municipal",
-      municipality: `${municipality} - ${ward}`,
-      options: [
-        {
-          id: "rural_roads",
-          title: "Rural Road Maintenance",
-          description: "Repair farm roads and improve access to markets",
-          icon: "🛤️",
-          votes: 456
-        },
-        {
-          id: "water_boreholes",
-          title: "Community Water Points",
-          description: "Drill boreholes and install communal water tanks",
-          icon: "💧",
-          votes: 678
-        },
-        {
-          id: "agriculture_support",
-          title: "Small-Scale Farmer Support",
-          description: "Seeds, tools, and agricultural training programs",
-          icon: "🌾",
-          votes: 543
-        },
-        {
-          id: "tourism_infrastructure",
-          title: "Tourism Development",
-          description: "Visitor centers and heritage site improvements",
-          icon: "🏞️",
-          votes: 321
-        }
-      ],
-      timeRemaining: "14 days remaining",
-      totalVotes: 1998,
-      active: true,
-      createdAt: new Date().toISOString()
-    });
-  }
-  
-  return baseAgendas;
-};
-
 const Index = () => {
   const [activeTab, setActiveTab] = useState("dashboard");
   const [user, setUser] = useState<User | null>(null);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
-  const [agendas, setAgendas] = useState([]);
   const [nominations, setNominations] = useState([]);
-  const [votingType, setVotingType] = useState<"provincial" | "municipal">("provincial");
 
   useEffect(() => {
-    // Check if user is logged in
     const storedUser = localStorage.getItem("myvote_user");
     if (storedUser) {
       setUser(JSON.parse(storedUser));
@@ -626,29 +388,10 @@ const Index = () => {
       setAuthDialogOpen(true);
     }
 
-    // Load agendas and nominations
-    const storedAgendas = localStorage.getItem("myvote_agendas");
     const storedNominations = localStorage.getItem("myvote_nominations");
-    
-    if (storedAgendas) {
-      setAgendas(JSON.parse(storedAgendas));
-    } else {
-      // Set default agendas with South African context
-      const storedUser = localStorage.getItem("myvote_user");
-      let municipalAgendas = [];
-      if (storedUser) {
-        const userData = JSON.parse(storedUser);
-        municipalAgendas = getCommunityTailoredAgendas(userData.municipality, userData.ward);
-      }
-      const defaultAgendas = [...defaultProvincialAgendas, ...municipalAgendas];
-      setAgendas(defaultAgendas);
-      localStorage.setItem("myvote_agendas", JSON.stringify(defaultAgendas));
-    }
-    
     if (storedNominations) {
       setNominations(JSON.parse(storedNominations));
     } else {
-      // Set default nominations
       const storedUser = localStorage.getItem("myvote_user");
       let userNominations = [];
       if (storedUser) {
@@ -664,14 +407,6 @@ const Index = () => {
 
   const handleAuthSuccess = (userData: User) => {
     setUser(userData);
-    
-    // Update agendas with community-tailored content
-    const communityAgendas = getCommunityTailoredAgendas(userData.municipality, userData.ward);
-    const updatedAgendas = [...defaultProvincialAgendas, ...communityAgendas];
-    setAgendas(updatedAgendas);
-    localStorage.setItem("myvote_agendas", JSON.stringify(updatedAgendas));
-    
-    // Update nominations with user-specific content
     const userNominations = [...leadershipNominations, ...getMunicipalNominations(userData.municipality, userData.ward)];
     setNominations(userNominations);
     localStorage.setItem("myvote_nominations", JSON.stringify(userNominations));
@@ -725,10 +460,10 @@ const Index = () => {
               <h1 className="text-4xl lg:text-5xl font-bold leading-tight">
                 Democracy in the Western Cape
               </h1>
-              <p className="text-xl text-primary-foreground/90">
-                Secure blockchain voting for South African communities. Participate in provincial 
-                and municipal decisions, from Cape Town to rural Western Cape. Your voice shapes 
-                infrastructure, housing, education, and essential services with Ethereum-verified transparency.
+               <p className="text-xl text-primary-foreground/90">
+                Secure blockchain voting for leadership elections. Choose your representatives at provincial 
+                and municipal levels. Your voice matters in selecting leaders for the Western Cape with 
+                Ethereum-verified transparency.
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -779,7 +514,7 @@ const Index = () => {
               </div>
               <CardTitle>Community First</CardTitle>
               <CardDescription>
-                From provincial transport to local housing - participate in decisions that directly impact your community
+                Vote for leaders who represent your community - from provincial premiers to local ward councillors
               </CardDescription>
             </CardHeader>
           </Card>
@@ -788,30 +523,18 @@ const Index = () => {
         {/* Main Dashboard */}
         <section>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-8' : 'grid-cols-7'} bg-white/50 backdrop-blur-sm`}>
+            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-5' : 'grid-cols-4'} bg-white/50 backdrop-blur-sm`}>
               <TabsTrigger value="dashboard" className="gap-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="hidden sm:inline">Dashboard</span>
               </TabsTrigger>
-              <TabsTrigger value="leadership" className="gap-2">
+              <TabsTrigger value="elections" className="gap-2">
                 <Crown className="w-4 h-4" />
-                <span className="hidden sm:inline">Leadership</span>
-              </TabsTrigger>
-              <TabsTrigger value="provincial" className="gap-2">
-                <Globe className="w-4 h-4" />
-                <span className="hidden sm:inline">Provincial</span>
-              </TabsTrigger>
-              <TabsTrigger value="municipal" className="gap-2">
-                <Vote className="w-4 h-4" />
-                <span className="hidden sm:inline">Municipal</span>
+                <span className="hidden sm:inline">Elections</span>
               </TabsTrigger>
               <TabsTrigger value="notifications" className="gap-2">
                 <Bell className="w-4 h-4" />
                 <span className="hidden sm:inline">Notifications</span>
-              </TabsTrigger>
-              <TabsTrigger value="engage" className="gap-2">
-                <Users className="w-4 h-4" />
-                <span className="hidden sm:inline">Engage</span>
               </TabsTrigger>
               <TabsTrigger value="verify" className="gap-2">
                 <BeeIcon className="w-4 h-4" />
@@ -833,52 +556,36 @@ const Index = () => {
                 </p>
               </div>
 
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <Card className="bg-gradient-trust">
                   <CardContent className="p-6 text-center">
-                    <div className="text-2xl font-bold text-primary">{agendas.filter((a: any) => a.active).length}</div>
-                    <p className="text-sm text-muted-foreground">Active Votes</p>
+                    <div className="text-2xl font-bold text-primary">{nominations.filter((n: any) => n.active).length}</div>
+                    <p className="text-sm text-muted-foreground">Active Elections</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-trust">
                   <CardContent className="p-6 text-center">
-                    <div className="text-2xl font-bold text-secondary">{agendas.filter((a: any) => a.type === "provincial").length}</div>
-                    <p className="text-sm text-muted-foreground">Provincial Issues</p>
+                    <div className="text-2xl font-bold text-secondary">{nominations.filter((n: any) => n.type === "provincial").length}</div>
+                    <p className="text-sm text-muted-foreground">Provincial Elections</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-trust">
                   <CardContent className="p-6 text-center">
-                    <div className="text-2xl font-bold text-accent">{agendas.filter((a: any) => a.type === "municipal").length}</div>
-                    <p className="text-sm text-muted-foreground">Municipal Issues</p>
-                  </CardContent>
-                </Card>
-                <Card className="bg-gradient-trust">
-                  <CardContent className="p-6 text-center">
-                    <div className="text-2xl font-bold text-success">84%</div>
-                    <p className="text-sm text-muted-foreground">Community Participation</p>
+                    <div className="text-2xl font-bold text-accent">{nominations.filter((n: any) => n.type === "municipal").length}</div>
+                    <p className="text-sm text-muted-foreground">Municipal Elections</p>
                   </CardContent>
                 </Card>
               </div>
 
-              {/* Featured Votes */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Active Votes for Your Area</h3>
-                {agendas.filter((a: any) => a.active && (a.municipality.includes("Cape Town") || a.municipality.includes(user.municipality))).slice(0, 2).map((agenda: any) => (
-                  <VotingCard
-                    key={agenda.id}
-                    {...agenda}
-                    onVote={(optionId) => {}}
-                  />
+                <h3 className="text-lg font-semibold">Active Elections</h3>
+                {nominations.slice(0, 2).map((nomination: any) => (
+                  <NominationCard key={nomination.id} {...nomination} />
                 ))}
-                {agendas.filter((a: any) => a.active && (a.municipality.includes("Cape Town") || a.municipality.includes(user.municipality))).length === 0 && (
-                  <Card className="text-center p-8">
-                    <p className="text-muted-foreground">No active voting agendas for your area</p>
-                  </Card>
-                )}
               </div>
             </TabsContent>
 
-            <TabsContent value="leadership" className="space-y-6">
+            <TabsContent value="elections" className="space-y-6">
               <div className="text-center space-y-2 mb-6">
                 <h2 className="text-2xl font-bold">Leadership Elections</h2>
                 <p className="text-muted-foreground">
@@ -886,28 +593,9 @@ const Index = () => {
                 </p>
               </div>
               
-              <div className="grid gap-4 mb-6">
-                <Button
-                  variant={votingType === "provincial" ? "default" : "outline"}
-                  onClick={() => setVotingType("provincial")}
-                  className="w-full sm:w-auto"
-                >
-                  <Globe className="w-4 h-4 mr-2" />
-                  Provincial Leadership
-                </Button>
-                <Button
-                  variant={votingType === "municipal" ? "default" : "outline"}
-                  onClick={() => setVotingType("municipal")}
-                  className="w-full sm:w-auto"
-                >
-                  <Vote className="w-4 h-4 mr-2" />
-                  Municipal Leadership
-                </Button>
-              </div>
-              
-              {nominations.filter((n: any) => n.active && n.type === votingType).length > 0 ? (
+              {nominations.filter((n: any) => n.active).length > 0 ? (
                 <div className="space-y-6">
-                  {nominations.filter((n: any) => n.active && n.type === votingType).map((nomination: any) => (
+                  {nominations.filter((n: any) => n.active).map((nomination: any) => (
                     <NominationCard
                       key={nomination.id}
                       title={nomination.title}
@@ -923,59 +611,7 @@ const Index = () => {
               ) : (
                 <Card className="text-center p-8">
                   <Crown className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No active {votingType} leadership elections at this time</p>
-                </Card>
-              )}
-            </TabsContent>
-
-            <TabsContent value="provincial" className="space-y-6">
-              <div className="text-center space-y-2 mb-6">
-                <h2 className="text-2xl font-bold">Western Cape Provincial Voting</h2>
-                <p className="text-muted-foreground">
-                  Vote on province-wide initiatives affecting all Western Cape communities
-                </p>
-              </div>
-              
-              {agendas.filter((a: any) => a.active && a.type === "provincial").length > 0 ? (
-                <div className="space-y-6">
-                  {agendas.filter((a: any) => a.active && a.type === "provincial").map((agenda: any) => (
-                    <VotingCard
-                      key={agenda.id}
-                      {...agenda}
-                      onVote={(optionId) => {}}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <Card className="text-center p-8">
-                  <Globe className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No active provincial votes at this time</p>
-                </Card>
-              )}
-            </TabsContent>
-
-            <TabsContent value="municipal" className="space-y-6">
-              <div className="text-center space-y-2 mb-6">
-                <h2 className="text-2xl font-bold">Municipal & Local Community Voting</h2>
-                <p className="text-muted-foreground">
-                  Vote on local issues for {user.ward} and Cape Town municipal matters
-                </p>
-              </div>
-              
-              {agendas.filter((a: any) => a.active && a.type === "municipal" && a.municipality.includes("Cape Town")).length > 0 ? (
-                <div className="space-y-6">
-                  {agendas.filter((a: any) => a.active && a.type === "municipal" && a.municipality.includes("Cape Town")).map((agenda: any) => (
-                    <VotingCard
-                      key={agenda.id}
-                      {...agenda}
-                      onVote={(optionId) => {}}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <Card className="text-center p-8">
-                  <Vote className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
-                  <p className="text-muted-foreground">No active Cape Town municipal votes at this time</p>
+                  <p className="text-muted-foreground">No active elections at this time</p>
                 </Card>
               )}
             </TabsContent>
@@ -984,17 +620,13 @@ const Index = () => {
               <NotificationCenter municipality={user.municipality} ward={user.ward} />
             </TabsContent>
 
-            <TabsContent value="engage">
-              <EngagementHub />
-            </TabsContent>
-
             <TabsContent value="verify">
               <VoteVerification />
             </TabsContent>
 
             {user.isAdmin && (
               <TabsContent value="admin">
-                <AdminPanel agendas={agendas} setAgendas={setAgendas} />
+                <AdminPanel agendas={[]} setAgendas={() => {}} />
               </TabsContent>
             )}
           </Tabs>

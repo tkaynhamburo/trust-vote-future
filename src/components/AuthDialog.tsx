@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { BeeIcon } from "@/components/BeeIcon";
+import { BiometricAuth } from "@/components/BiometricAuth";
 import { Copy, Check } from "lucide-react";
 
 interface User {
@@ -62,7 +63,7 @@ const generateVoterID = (idNumber: string, municipality: string) => {
 };
 
 export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProps) => {
-  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [authMode, setAuthMode] = useState<"login" | "register" | "biometric">("login");
   const [username, setUsername] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [voterID, setVoterID] = useState("");
@@ -256,11 +257,38 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs value={authMode} onValueChange={(value) => setAuthMode(value as "login" | "register")} className="pt-4">
-          <TabsList className="grid w-full grid-cols-2">
+        <Tabs value={authMode} onValueChange={(value) => setAuthMode(value as "login" | "register" | "biometric")} className="pt-4">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="biometric">Biometric</TabsTrigger>
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="register">Register</TabsTrigger>
           </TabsList>
+          
+          <TabsContent value="biometric" className="space-y-4">
+            <BiometricAuth
+              onSuccess={() => {
+                const existingUsers = JSON.parse(localStorage.getItem("myvote_users") || "[]");
+                if (existingUsers.length > 0) {
+                  const user = existingUsers[0];
+                  localStorage.setItem("myvote_user", JSON.stringify(user));
+                  onAuthSuccess(user);
+                  onOpenChange(false);
+                  toast({
+                    title: "Biometric login successful",
+                    description: `Welcome back ${user.username}!`
+                  });
+                } else {
+                  toast({
+                    title: "No registered users",
+                    description: "Please register first before using biometric authentication",
+                    variant: "destructive"
+                  });
+                  setAuthMode("register");
+                }
+              }}
+              onCancel={() => setAuthMode("login")}
+            />
+          </TabsContent>
           
           <TabsContent value="login" className="space-y-4">
             <div className="space-y-2">
