@@ -63,7 +63,8 @@ const generateVoterID = (idNumber: string, municipality: string) => {
 };
 
 export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProps) => {
-  const [authMode, setAuthMode] = useState<"login" | "register" | "biometric">("login");
+  const [authMode, setAuthMode] = useState<"login" | "register">("login");
+  const [showBiometric, setShowBiometric] = useState(false);
   const [username, setUsername] = useState("");
   const [idNumber, setIdNumber] = useState("");
   const [voterID, setVoterID] = useState("");
@@ -257,68 +258,89 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
           </DialogDescription>
         </DialogHeader>
         
-        <Tabs value={authMode} onValueChange={(value) => setAuthMode(value as "login" | "register" | "biometric")} className="pt-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="biometric">Biometric</TabsTrigger>
+        <Tabs value={authMode} onValueChange={(value) => setAuthMode(value as "login" | "register")} className="pt-4">
+          <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="login">Login</TabsTrigger>
             <TabsTrigger value="register">Register</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="biometric" className="space-y-4">
-            <BiometricAuth
-              onSuccess={() => {
-                const existingUsers = JSON.parse(localStorage.getItem("myvote_users") || "[]");
-                if (existingUsers.length > 0) {
-                  const user = existingUsers[0];
-                  localStorage.setItem("myvote_user", JSON.stringify(user));
-                  onAuthSuccess(user);
-                  onOpenChange(false);
-                  toast({
-                    title: "Biometric login successful",
-                    description: `Welcome back ${user.username}!`
-                  });
-                } else {
-                  toast({
-                    title: "No registered users",
-                    description: "Please register first before using biometric authentication",
-                    variant: "destructive"
-                  });
-                  setAuthMode("register");
-                }
-              }}
-              onCancel={() => setAuthMode("login")}
-            />
-          </TabsContent>
-          
           <TabsContent value="login" className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="voterID">Voter ID</Label>
-              <Input
-                id="voterID"
-                placeholder="Enter your Voter ID (e.g., CPT123456)"
-                value={voterID}
-                onChange={(e) => setVoterID(e.target.value)}
-                disabled={isLoading}
+            {showBiometric ? (
+              <BiometricAuth
+                onSuccess={() => {
+                  const existingUsers = JSON.parse(localStorage.getItem("myvote_users") || "[]");
+                  if (existingUsers.length > 0) {
+                    const user = existingUsers[0];
+                    localStorage.setItem("myvote_user", JSON.stringify(user));
+                    onAuthSuccess(user);
+                    onOpenChange(false);
+                    toast({
+                      title: "Biometric login successful",
+                      description: `Welcome back ${user.username}!`
+                    });
+                  } else {
+                    toast({
+                      title: "No registered users",
+                      description: "Please register first before using biometric authentication",
+                      variant: "destructive"
+                    });
+                    setShowBiometric(false);
+                  }
+                }}
+                onCancel={() => setShowBiometric(false)}
               />
-            </div>
-            
-            <Button 
-              onClick={handleLogin} 
-              className="w-full" 
-              size="lg"
-              disabled={isLoading || !voterID.trim()}
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-trust-pulse">
-                    <BeeIcon className="w-4 h-4" />
+            ) : (
+              <>
+              <div className="space-y-2">
+                <Label htmlFor="voterID">Voter ID</Label>
+                <Input
+                  id="voterID"
+                  placeholder="Enter your Voter ID (e.g., CPT123456)"
+                  value={voterID}
+                  onChange={(e) => setVoterID(e.target.value)}
+                  disabled={isLoading}
+                />
+              </div>
+              
+              <Button 
+                onClick={handleLogin} 
+                className="w-full" 
+                size="lg"
+                disabled={isLoading || !voterID.trim()}
+              >
+                {isLoading ? (
+                  <div className="flex items-center gap-2">
+                    <div className="animate-trust-pulse">
+                      <BeeIcon className="w-4 h-4" />
+                    </div>
+                    Logging in...
                   </div>
-                  Logging in...
+                ) : (
+                  "Login to MyVote SA"
+                )}
+              </Button>
+
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t" />
                 </div>
-              ) : (
-                "Login to MyVote SA"
-              )}
-            </Button>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground">Or</span>
+                </div>
+              </div>
+
+              <Button
+                variant="outline"
+                className="w-full gap-2"
+                onClick={() => setShowBiometric(true)}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 11c0 3.517-1.009 6.799-2.753 9.571m-3.44-2.04l.054-.09A13.916 13.916 0 008 11a4 4 0 118 0c0 1.017-.07 2.019-.203 3m-2.118 6.844A21.88 21.88 0 0015.171 17m3.839 1.132c.645-2.266.99-4.659.99-7.132A8 8 0 008 4.07M3 15.364c.64-1.319 1-2.8 1-4.364 0-1.457.39-2.823 1.07-4" />
+                </svg>
+                Login with Biometric
+              </Button>
+            </>
+            )}
           </TabsContent>
           
           <TabsContent value="register" className="space-y-4">
