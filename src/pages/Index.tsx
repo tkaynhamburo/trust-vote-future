@@ -8,6 +8,7 @@ import { VoteVerification } from "@/components/VoteVerification";
 import { AuthDialog } from "@/components/AuthDialog";
 import { AdminPanel } from "@/components/AdminPanel";
 import { NotificationCenter } from "@/components/NotificationCenter";
+import BlockchainShowcase from "@/components/BlockchainShowcase";
 import { 
   Vote, 
   Users, 
@@ -18,7 +19,8 @@ import {
   Crown,
   Activity,
   Zap,
-  Bell
+  Bell,
+  Blocks
 } from "lucide-react";
 import { BeeIcon } from "@/components/BeeIcon";
 import civicHeroImage from "@/assets/civic-hero.jpg";
@@ -523,7 +525,7 @@ const Index = () => {
         {/* Main Dashboard */}
         <section>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-5' : 'grid-cols-4'} bg-white/50 backdrop-blur-sm`}>
+            <TabsList className={`grid w-full ${user.isAdmin ? 'grid-cols-6' : 'grid-cols-5'} bg-white/50 backdrop-blur-sm`}>
               <TabsTrigger value="dashboard" className="gap-2">
                 <TrendingUp className="w-4 h-4" />
                 <span className="hidden sm:inline">Dashboard</span>
@@ -535,6 +537,10 @@ const Index = () => {
               <TabsTrigger value="notifications" className="gap-2">
                 <Bell className="w-4 h-4" />
                 <span className="hidden sm:inline">Notifications</span>
+              </TabsTrigger>
+              <TabsTrigger value="blockchain" className="gap-2">
+                <Blocks className="w-4 h-4" />
+                <span className="hidden sm:inline">Blockchain</span>
               </TabsTrigger>
               <TabsTrigger value="verify" className="gap-2">
                 <BeeIcon className="w-4 h-4" />
@@ -618,6 +624,10 @@ const Index = () => {
 
             <TabsContent value="notifications" className="space-y-6">
               <NotificationCenter municipality={user.municipality} ward={user.ward} />
+            </TabsContent>
+
+            <TabsContent value="blockchain">
+              <BlockchainShowcase />
             </TabsContent>
 
             <TabsContent value="verify">
