@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Fingerprint, Scan } from "lucide-react";
+import { Fingerprint, Scan, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface BiometricAuthProps {
@@ -11,6 +11,8 @@ interface BiometricAuthProps {
 export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
   const [scanning, setScanning] = useState(false);
   const [scanType, setScanType] = useState<"fingerprint" | "face" | null>(null);
+  const [fingerprintVerified, setFingerprintVerified] = useState(false);
+  const [faceVerified, setFaceVerified] = useState(false);
   const { toast } = useToast();
 
   const handleBiometricAuth = async (type: "fingerprint" | "face") => {
@@ -21,16 +23,27 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
       await new Promise(resolve => setTimeout(resolve, 2000));
       
       setScanning(false);
-      toast({
-        title: "Authentication successful",
-        description: `${type === "fingerprint" ? "Fingerprint" : "Face"} verified successfully`
-      });
-      onSuccess();
+      
+      if (type === "fingerprint") {
+        setFingerprintVerified(true);
+        toast({
+          title: "Fingerprint verified ✓",
+          description: "Now proceed to face scan"
+        });
+      } else {
+        setFaceVerified(true);
+        toast({
+          title: "Face scan verified ✓",
+          description: "Both biometrics verified successfully"
+        });
+        // Both verified, proceed to next step
+        onSuccess();
+      }
     } catch (error) {
       setScanning(false);
       toast({
         title: "Authentication failed",
-        description: "Please try again or use an alternative method",
+        description: "Please try again",
         variant: "destructive"
       });
     }
@@ -56,8 +69,13 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
           <p className="text-sm text-muted-foreground">
             {scanType === "fingerprint" 
               ? "Place your finger on the sensor" 
-              : "Position your face in the frame"}
+              : "Position your face in the center of the frame"}
           </p>
+          {scanType === "face" && (
+            <p className="text-xs text-muted-foreground bg-primary/10 p-2 rounded">
+              Keep your face centered and look directly at the camera
+            </p>
+          )}
         </div>
         <Button variant="outline" onClick={onCancel}>
           Cancel
@@ -69,35 +87,54 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-2">
-        <h3 className="text-lg font-semibold">Biometric Authentication</h3>
+        <h3 className="text-lg font-semibold">Two-Factor Biometric Authentication</h3>
         <p className="text-sm text-muted-foreground">
-          Choose your preferred authentication method
+          Both fingerprint and face scan are required for secure login
         </p>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <Button
-          variant="outline"
-          className="h-32 flex-col gap-3 hover:border-primary hover:bg-primary/5"
-          onClick={() => handleBiometricAuth("fingerprint")}
-        >
-          <Fingerprint className="w-12 h-12" />
-          <span className="font-medium">Fingerprint</span>
-        </Button>
-
-        <Button
-          variant="outline"
-          className="h-32 flex-col gap-3 hover:border-primary hover:bg-primary/5"
-          onClick={() => handleBiometricAuth("face")}
-        >
-          <Scan className="w-12 h-12" />
-          <span className="font-medium">Face Scan</span>
-        </Button>
-      </div>
+      {!fingerprintVerified ? (
+        <div className="space-y-4">
+          <div className="text-center space-y-2 py-2">
+            <h4 className="font-medium">Step 1: Fingerprint Scan</h4>
+            <p className="text-sm text-muted-foreground">
+              Place your finger on the sensor to begin
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full h-32 flex-col gap-3 hover:border-primary hover:bg-primary/5"
+            onClick={() => handleBiometricAuth("fingerprint")}
+          >
+            <Fingerprint className="w-12 h-12" />
+            <span className="font-medium">Scan Fingerprint</span>
+          </Button>
+        </div>
+      ) : !faceVerified ? (
+        <div className="space-y-4">
+          <div className="text-center space-y-2 py-2">
+            <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-2">
+              <Check className="w-6 h-6 text-success" />
+            </div>
+            <h4 className="font-medium">Step 2: Face Scan</h4>
+            <p className="text-sm text-muted-foreground">
+              Position your face in the center and look at the camera
+            </p>
+          </div>
+          <Button
+            variant="outline"
+            className="w-full h-32 flex-col gap-3 hover:border-primary hover:bg-primary/5"
+            onClick={() => handleBiometricAuth("face")}
+          >
+            <Scan className="w-12 h-12" />
+            <span className="font-medium">Scan Face</span>
+          </Button>
+        </div>
+      ) : null}
 
       <div className="text-center">
-        <Button variant="ghost" onClick={onCancel} className="w-full">
-          Use Voter ID instead
+        <Button variant="ghost" onClick={onCancel} className="w-full text-sm">
+          Cancel
         </Button>
       </div>
     </div>
