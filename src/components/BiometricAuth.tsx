@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Fingerprint, Scan, Check } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -14,13 +14,59 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
   const [fingerprintVerified, setFingerprintVerified] = useState(false);
   const [faceVerified, setFaceVerified] = useState(false);
   const { toast } = useToast();
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup camera stream when component unmounts
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  const startCamera = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: { facingMode: "user" } 
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      toast({
+        title: "Camera access denied",
+        description: "Please allow camera access to use face scan",
+        variant: "destructive"
+      });
+      setScanning(false);
+      setScanType(null);
+    }
+  };
+
+  const stopCamera = () => {
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop());
+      streamRef.current = null;
+    }
+  };
 
   const handleBiometricAuth = async (type: "fingerprint" | "face") => {
     setScanType(type);
     setScanning(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      if (type === "face") {
+        await startCamera();
+      }
+
+      await new Promise(resolve => setTimeout(resolve, 3000));
+      
+      if (type === "face") {
+        stopCamera();
+      }
       
       setScanning(false);
       
@@ -40,6 +86,7 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
         onSuccess();
       }
     } catch (error) {
+      stopCamera();
       setScanning(false);
       toast({
         title: "Authentication failed",
@@ -52,16 +99,28 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
   if (scanning) {
     return (
       <div className="flex flex-col items-center justify-center space-y-6 py-8">
-        <div className="relative">
-          <div className="w-32 h-32 rounded-full border-4 border-primary/20 flex items-center justify-center">
-            {scanType === "fingerprint" ? (
-              <Fingerprint className="w-16 h-16 text-primary animate-pulse" />
-            ) : (
-              <Scan className="w-16 h-16 text-primary animate-pulse" />
-            )}
+        {scanType === "face" ? (
+          <div className="relative w-full max-w-md">
+            <video
+              ref={videoRef}
+              autoPlay
+              playsInline
+              muted
+              className="w-full rounded-lg border-4 border-primary"
+            />
+            <div className="absolute inset-0 rounded-lg border-4 border-primary border-t-transparent animate-spin" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="w-48 h-48 border-2 border-primary/50 rounded-full" />
+            </div>
           </div>
-          <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
-        </div>
+        ) : (
+          <div className="relative">
+            <div className="w-32 h-32 rounded-full border-4 border-primary/20 flex items-center justify-center">
+              <Fingerprint className="w-16 h-16 text-primary animate-pulse" />
+            </div>
+            <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+          </div>
+        )}
         <div className="text-center space-y-2">
           <h3 className="text-lg font-semibold">
             {scanType === "fingerprint" ? "Scanning fingerprint..." : "Scanning face..."}
@@ -77,7 +136,10 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
             </p>
           )}
         </div>
-        <Button variant="outline" onClick={onCancel}>
+        <Button variant="outline" onClick={() => {
+          stopCamera();
+          onCancel();
+        }}>
           Cancel
         </Button>
       </div>
