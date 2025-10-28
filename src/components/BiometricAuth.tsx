@@ -53,6 +53,13 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
     }
   };
 
+  const detectFace = async (): Promise<boolean> => {
+    // Simulate face detection - in production, use TensorFlow.js or similar
+    // This simulates a 70% chance of detecting a face
+    await new Promise(resolve => setTimeout(resolve, 3000));
+    return Math.random() > 0.3;
+  };
+
   const handleBiometricAuth = async (type: "fingerprint" | "face") => {
     setScanType(type);
     setScanning(true);
@@ -60,30 +67,37 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
     try {
       if (type === "face") {
         await startCamera();
-      }
-
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      if (type === "face") {
+        
+        // Detect face
+        const faceDetected = await detectFace();
+        
         stopCamera();
-      }
-      
-      setScanning(false);
-      
-      if (type === "fingerprint") {
-        setFingerprintVerified(true);
-        toast({
-          title: "Fingerprint verified ✓",
-          description: "Now proceed to face scan"
-        });
-      } else {
+        setScanning(false);
+        
+        if (!faceDetected) {
+          toast({
+            title: "No face detected",
+            description: "Please ensure your face is clearly visible and centered",
+            variant: "destructive"
+          });
+          return;
+        }
+        
         setFaceVerified(true);
         toast({
           title: "Face scan verified ✓",
           description: "Both biometrics verified successfully"
         });
-        // Both verified, proceed to next step
         onSuccess();
+      } else {
+        // Fingerprint scan
+        await new Promise(resolve => setTimeout(resolve, 3000));
+        setScanning(false);
+        setFingerprintVerified(true);
+        toast({
+          title: "Fingerprint verified ✓",
+          description: "Now proceed to face scan"
+        });
       }
     } catch (error) {
       stopCamera();
