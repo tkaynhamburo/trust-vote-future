@@ -65,9 +65,9 @@ const generateVoterID = (idNumber: string, municipality: string) => {
 export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProps) => {
   const [authMode, setAuthMode] = useState<"login" | "register">("login");
   const [biometricVerified, setBiometricVerified] = useState(false);
+  const [registrationBiometricDone, setRegistrationBiometricDone] = useState(false);
   const [username, setUsername] = useState("");
   const [idNumber, setIdNumber] = useState("");
-  const [voterID, setVoterID] = useState("");
   const [municipality, setMunicipality] = useState("");
   const [ward, setWard] = useState("");
   const [generatedVoterID, setGeneratedVoterID] = useState("");
@@ -150,29 +150,23 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
       return;
     }
 
-    if (!voterID.trim()) {
-      toast({
-        title: "Missing Voter ID",
-        description: "Please enter your Voter ID",
-        variant: "destructive"
-      });
-      return;
-    }
-
     setIsLoading(true);
     
     const existingUsers = JSON.parse(localStorage.getItem("myvote_users") || "[]");
-    const user = existingUsers.find((u: any) => u.voterID === voterID);
     
     await new Promise(resolve => setTimeout(resolve, 1500));
     
+    // Find user by ID number (biometric auth validates identity)
+    const user = existingUsers.find((u: any) => u.idNumber === idNumber);
+    
     if (!user) {
       toast({
-        title: "Invalid Voter ID",
-        description: "Voter ID not found. Please check your ID or register.",
+        title: "User not found",
+        description: "No account found with this biometric profile. Please register.",
         variant: "destructive"
       });
       setIsLoading(false);
+      setBiometricVerified(false);
       return;
     }
     
@@ -184,7 +178,7 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
     
     toast({
       title: "Login successful",
-      description: `Welcome back ${user.username}! Two-factor authentication verified.`
+      description: `Welcome back ${user.username}! Biometric authentication verified.`
     });
   };
 
@@ -273,160 +267,143 @@ export const AuthDialog = ({ open, onOpenChange, onAuthSuccess }: AuthDialogProp
           </TabsList>
           
           <TabsContent value="login" className="space-y-4">
-            {!biometricVerified ? (
+            <div className="text-center space-y-2 py-4">
+              <h3 className="font-semibold">Biometric Login</h3>
+              <p className="text-sm text-muted-foreground">
+                Use fingerprint and face scan to authenticate
+              </p>
+            </div>
+            <BiometricAuth
+              onSuccess={() => {
+                setBiometricVerified(true);
+                toast({
+                  title: "Authentication successful",
+                  description: "Logging you in..."
+                });
+                handleLogin();
+              }}
+              onCancel={() => {
+                toast({
+                  title: "Login cancelled",
+                  description: "Biometric authentication is required to login",
+                  variant: "destructive"
+                });
+              }}
+            />
+          </TabsContent>
+          
+          <TabsContent value="register" className="space-y-4">
+            {!registrationBiometricDone ? (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="username">Full Name</Label>
+                  <Input
+                    id="username"
+                    placeholder="Enter your full name"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    disabled={isLoading}
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="idNumber">ID Number</Label>
+                  <Input
+                    id="idNumber"
+                    type="number"
+                    placeholder="Enter ID (111 - 100000)"
+                    value={idNumber}
+                    onChange={(e) => setIdNumber(e.target.value)}
+                    disabled={isLoading}
+                    min="111"
+                    max="100000"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="municipality">Municipality</Label>
+                  <Select value={municipality} onValueChange={setMunicipality} disabled={isLoading}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your municipality" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {westernCapeMunicipalities.map((muni) => (
+                        <SelectItem key={muni} value={muni}>
+                          {muni}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {municipality && (
+                  <div className="space-y-2">
+                    <Label htmlFor="ward">Ward</Label>
+                    <Select value={ward} onValueChange={setWard} disabled={isLoading}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your ward" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {getWardOptions(municipality).map((wardOption) => (
+                          <SelectItem key={wardOption} value={wardOption}>
+                            {wardOption}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                
+                <Button 
+                  onClick={() => {
+                    if (!username.trim() || !idNumber || !municipality || !ward) {
+                      toast({
+                        title: "Missing information",
+                        description: "Please fill in all fields before proceeding to biometric registration",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    if (!validateIDNumber(idNumber)) {
+                      toast({
+                        title: "Invalid ID Number",
+                        description: "ID number must be between 111 and 100000",
+                        variant: "destructive"
+                      });
+                      return;
+                    }
+                    setRegistrationBiometricDone(true);
+                  }}
+                  className="w-full" 
+                  size="lg"
+                  disabled={isLoading || !username.trim() || !idNumber || !municipality || !ward}
+                >
+                  Continue to Biometric Registration
+                </Button>
+              </>
+            ) : (
               <>
                 <div className="text-center space-y-2 py-4">
-                  <h3 className="font-semibold">Step 1: Biometric Verification</h3>
+                  <h3 className="font-semibold">Complete Biometric Registration</h3>
                   <p className="text-sm text-muted-foreground">
-                    Complete biometric authentication to proceed
+                    Register your fingerprint and face for secure authentication
                   </p>
                 </div>
                 <BiometricAuth
-                  onSuccess={() => {
-                    setBiometricVerified(true);
-                    toast({
-                      title: "Biometric verified",
-                      description: "Now enter your Voter ID to complete login"
-                    });
+                  onSuccess={async () => {
+                    await handleRegister();
                   }}
                   onCancel={() => {
+                    setRegistrationBiometricDone(false);
                     toast({
-                      title: "Login cancelled",
-                      description: "Biometric authentication is required to login",
+                      title: "Registration cancelled",
+                      description: "Please complete biometric registration to continue",
                       variant: "destructive"
                     });
                   }}
                 />
               </>
-            ) : (
-              <>
-              <div className="text-center space-y-2 py-4">
-                <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-2">
-                  <Check className="w-6 h-6 text-success" />
-                </div>
-                <h3 className="font-semibold">Step 2: Voter ID Verification</h3>
-                <p className="text-sm text-muted-foreground">
-                  Biometric verified ✓ Now enter your Voter ID
-                </p>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="voterID">Voter ID</Label>
-                <Input
-                  id="voterID"
-                  placeholder="Enter your Voter ID (e.g., CPT123456)"
-                  value={voterID}
-                  onChange={(e) => setVoterID(e.target.value)}
-                  disabled={isLoading}
-                />
-              </div>
-              
-              <Button 
-                onClick={handleLogin} 
-                className="w-full" 
-                size="lg"
-                disabled={isLoading || !voterID.trim()}
-              >
-                {isLoading ? (
-                  <div className="flex items-center gap-2">
-                    <div className="animate-trust-pulse">
-                      <BeeIcon className="w-4 h-4" />
-                    </div>
-                    Verifying...
-                  </div>
-                ) : (
-                  "Complete Login"
-                )}
-              </Button>
-
-              <Button
-                variant="ghost"
-                className="w-full"
-                onClick={() => setBiometricVerified(false)}
-              >
-                ← Back to biometric scan
-              </Button>
-            </>
             )}
-          </TabsContent>
-          
-          <TabsContent value="register" className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="username">Full Name</Label>
-              <Input
-                id="username"
-                placeholder="Enter your full name"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                disabled={isLoading}
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="idNumber">ID Number</Label>
-              <Input
-                id="idNumber"
-                type="number"
-                placeholder="Enter ID (111 - 100000)"
-                value={idNumber}
-                onChange={(e) => setIdNumber(e.target.value)}
-                disabled={isLoading}
-                min="111"
-                max="100000"
-              />
-            </div>
-            
-            <div className="space-y-2">
-              <Label htmlFor="municipality">Municipality</Label>
-              <Select value={municipality} onValueChange={setMunicipality} disabled={isLoading}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select your municipality" />
-                </SelectTrigger>
-                <SelectContent>
-                  {westernCapeMunicipalities.map((muni) => (
-                    <SelectItem key={muni} value={muni}>
-                      {muni}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            
-            {municipality && (
-              <div className="space-y-2">
-                <Label htmlFor="ward">Ward</Label>
-                <Select value={ward} onValueChange={setWard} disabled={isLoading}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your ward" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {getWardOptions(municipality).map((wardOption) => (
-                      <SelectItem key={wardOption} value={wardOption}>
-                        {wardOption}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
-            
-            <Button 
-              onClick={handleRegister} 
-              className="w-full" 
-              size="lg"
-              disabled={isLoading || !username.trim() || !idNumber || !municipality || !ward}
-            >
-              {isLoading ? (
-                <div className="flex items-center gap-2">
-                  <div className="animate-trust-pulse">
-                    <BeeIcon className="w-4 h-4" />
-                  </div>
-                  Registering...
-                </div>
-              ) : (
-                "Register for MyVote SA"
-              )}
-            </Button>
           </TabsContent>
         </Tabs>
       </DialogContent>

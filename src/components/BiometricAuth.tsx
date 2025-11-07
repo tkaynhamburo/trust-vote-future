@@ -54,10 +54,10 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
   };
 
   const detectFace = async (): Promise<boolean> => {
-    // Simulate face detection - in production, use TensorFlow.js or similar
-    // This simulates a 70% chance of detecting a face
-    await new Promise(resolve => setTimeout(resolve, 3000));
-    return Math.random() > 0.3;
+    // Simulate face detection with longer time - in production, use TensorFlow.js or similar
+    // Increased detection time to 6 seconds and higher success rate (85%)
+    await new Promise(resolve => setTimeout(resolve, 6000));
+    return Math.random() > 0.15;
   };
 
   const handleBiometricAuth = async (type: "fingerprint" | "face") => {
@@ -68,8 +68,14 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
       if (type === "face") {
         await startCamera();
         
-        // Detect face
+        // Show loading message and give time to position face
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Detect face - increase detection time to 6 seconds
         const faceDetected = await detectFace();
+        
+        // Keep camera on for 2 more seconds after detection
+        await new Promise(resolve => setTimeout(resolve, 2000));
         
         stopCamera();
         setScanning(false);
@@ -77,9 +83,10 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
         if (!faceDetected) {
           toast({
             title: "No face detected",
-            description: "Please ensure your face is clearly visible and centered",
+            description: "Please position your face in the center and ensure good lighting",
             variant: "destructive"
           });
+          setScanType(null);
           return;
         }
         
@@ -90,8 +97,12 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
         });
         onSuccess();
       } else {
-        // Fingerprint scan
-        await new Promise(resolve => setTimeout(resolve, 3000));
+        // Fingerprint scan - increase time to 5 seconds with loading state
+        toast({
+          title: "Scanning...",
+          description: "Hold your finger steady on the sensor"
+        });
+        await new Promise(resolve => setTimeout(resolve, 5000));
         setScanning(false);
         setFingerprintVerified(true);
         toast({
@@ -102,6 +113,7 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
     } catch (error) {
       stopCamera();
       setScanning(false);
+      setScanType(null);
       toast({
         title: "Authentication failed",
         description: "Please try again",
@@ -140,13 +152,23 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
             {scanType === "fingerprint" ? "Scanning fingerprint..." : "Scanning face..."}
           </h3>
           <p className="text-sm text-muted-foreground">
-            {scanType === "fingerprint" 
-              ? "Place your finger on the sensor" 
-              : "Position your face in the center of the frame"}
+          {scanType === "fingerprint" 
+              ? "Touch and hold your finger on the sensor - scanning in progress" 
+              : "Position your face in the center and hold steady"}
           </p>
           {scanType === "face" && (
-            <p className="text-xs text-muted-foreground bg-primary/10 p-2 rounded">
-              Keep your face centered and look directly at the camera
+            <div className="space-y-2">
+              <p className="text-xs text-muted-foreground bg-primary/10 p-2 rounded font-medium">
+                ⚡ Keep your face centered and look directly at the camera
+              </p>
+              <p className="text-xs text-muted-foreground bg-amber-50 p-2 rounded border border-amber-200">
+                Ensure good lighting and remain still while scanning...
+              </p>
+            </div>
+          )}
+          {scanType === "fingerprint" && (
+            <p className="text-xs text-muted-foreground bg-primary/10 p-2 rounded font-medium">
+              🔄 Loading... Please keep your finger on the sensor
             </p>
           )}
         </div>
@@ -165,7 +187,10 @@ export const BiometricAuth = ({ onSuccess, onCancel }: BiometricAuthProps) => {
       <div className="text-center space-y-2">
         <h3 className="text-lg font-semibold">Two-Factor Biometric Authentication</h3>
         <p className="text-sm text-muted-foreground">
-          Both fingerprint and face scan are required for secure login
+          Both fingerprint and face scan are required for secure authentication
+        </p>
+        <p className="text-xs text-amber-600 bg-amber-50 p-2 rounded border border-amber-200">
+          ⚠️ Please position yourself correctly for optimal scanning results
         </p>
       </div>
 

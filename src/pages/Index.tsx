@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { CivicHeader } from "@/components/CivicHeader";
 import { NominationCard } from "@/components/NominationCard";
 import { VoteVerification } from "@/components/VoteVerification";
@@ -9,6 +10,7 @@ import { AuthDialog } from "@/components/AuthDialog";
 import { AdminPanel } from "@/components/AdminPanel";
 import { NotificationCenter } from "@/components/NotificationCenter";
 import BlockchainShowcase from "@/components/BlockchainShowcase";
+import { realSACandidates } from "@/data/candidates";
 import { 
   Vote, 
   Users, 
@@ -44,7 +46,7 @@ const westernCapeMunicipalities = [
   "Prince Albert", "Beaufort West", "Central Karoo"
 ];
 
-// Leadership Nominations for Provincial and Municipal Positions
+// Leadership Nominations - Using Real SA Politicians
 const leadershipNominations = [
   {
     id: "provincial_premier_2024",
@@ -53,43 +55,9 @@ const leadershipNominations = [
     position: "Premier of Western Cape",
     type: "provincial",
     municipality: "Western Cape Province",
-    candidates: [
-      {
-        id: "micaiah_nhamburo",
-        name: "Micaiah Nhamburo",
-        position: "Premier Candidate",
-        party: "Richfield Cape Town Campus A",
-        experience: "15 years in provincial administration, former Mayor of Stellenbosch, holds Master's in Public Administration",
-        manifesto: "Focus on rural development, youth employment, and digital transformation of government services across Western Cape",
-        avatar: "/lovable-uploads/2b92892d-45bc-4fe5-8aa8-f694d02b4188.png",
-        votes: 45623,
-        incumbent: false
-      },
-      {
-        id: "munyaradzi_mudavanhu",
-        name: "Munyaradzi Mudavanhu",
-        position: "Premier Candidate", 
-        party: "Richfield Cape Town Campus B",
-        experience: "12 years as Municipal Manager in George, extensive background in community development and infrastructure planning",
-        manifesto: "Prioritize housing delivery, public transport expansion, and renewable energy projects to create sustainable jobs",
-        avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
-        votes: 38947,
-        incumbent: false
-      },
-      {
-        id: "ben_mbayo",
-        name: "Ben Mbayo",
-        position: "Premier Candidate",
-        party: "Richfield Cape Town Campus C",
-        experience: "Business leader, 6 years in public service, former municipal manager, MBA graduate",
-        manifesto: "Youth empowerment, digital transformation, sustainable development, and transparent governance",
-        avatar: "/lovable-uploads/d0674897-abc6-478c-9d32-bbaa439ced68.png",
-        votes: 28456,
-        incumbent: false
-      }
-    ],
+    candidates: realSACandidates.provincial.premier,
     timeRemaining: "15 days remaining",
-    totalVotes: 84570,
+    totalVotes: realSACandidates.provincial.premier.reduce((sum, c) => sum + c.votes, 0),
     active: true,
     createdAt: new Date().toISOString()
   }
@@ -280,43 +248,9 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
       position: "Executive Mayor",
       type: "municipal",
       municipality: municipality,
-        candidates: [
-        {
-          id: "micaiah_nhamburo_mayor",
-          name: "Micaiah Nhamburo",
-          position: "Mayoral Candidate",
-          party: "Richfield Cape Town Campus A",
-          experience: "8 years as Ward Councillor, former Deputy Mayor of Stellenbosch, Civil Engineering background",
-          manifesto: "Focus on service delivery in townships, fixing water infrastructure, and creating youth employment opportunities",
-          avatar: "/lovable-uploads/2b92892d-45bc-4fe5-8aa8-f694d02b4188.png",
-          votes: 23567,
-          incumbent: false
-        },
-        {
-          id: "munyaradzi_mudavanhu_mayor",
-          name: "Munyaradzi Mudavanhu",
-          position: "Mayoral Candidate",
-          party: "Richfield Cape Town Campus B",
-          experience: "10 years as Community Development Manager, Masters in Urban Planning, housing delivery specialist",
-          manifesto: "Accelerate housing delivery, improve public transport to townships, and strengthen community safety partnerships",
-          avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
-          votes: 19234,
-          incumbent: false
-        },
-        {
-          id: "ben_mbayo_mayor",
-          name: "Ben Mbayo",
-          position: "Mayoral Candidate",
-          party: "Richfield Cape Town Campus C",
-          experience: "Entrepreneur, 4 years municipal experience, former ward committee member, engineering degree",
-          manifesto: "Smart city initiatives, youth employment programs, green energy projects, and citizen engagement",
-          avatar: "/lovable-uploads/d0674897-abc6-478c-9d32-bbaa439ced68.png",
-          votes: 15892,
-          incumbent: false
-        }
-      ],
+      candidates: realSACandidates.municipal.capeTownMayor,
       timeRemaining: "18 days remaining",
-      totalVotes: 42801,
+      totalVotes: realSACandidates.municipal.capeTownMayor.reduce((sum, c) => sum + c.votes, 0),
       active: true,
       createdAt: new Date().toISOString()
     });
@@ -331,43 +265,9 @@ const getMunicipalNominations = (municipality: string, ward: string) => {
       position: "Ward Councillor",
       type: "municipal",
       municipality: `${municipality} - ${ward}`,
-      candidates: [
-        {
-          id: `${ward}_candidate_1`,
-          name: "Micaiah Nhamburo",
-          position: "Councillor Candidate",
-          party: "Richfield Cape Town Campus A",
-          experience: "Community organizer for 6 years, small business owner, youth development coordinator",
-          manifesto: "Fight for free basic services, job creation for youth, and improved community safety",
-          avatar: "/lovable-uploads/2b92892d-45bc-4fe5-8aa8-f694d02b4188.png",
-          votes: 1245,
-          incumbent: false
-        },
-        {
-          id: `${ward}_candidate_2`,
-          name: "Munyaradzi Mudavanhu",
-          position: "Councillor Candidate", 
-          party: "Richfield Cape Town Campus B",
-          experience: "Current ward councillor (incumbent), 4 years experience, background in local government",
-          manifesto: "Continue infrastructure improvements, maintain service delivery standards, strengthen community partnerships",
-          avatar: "/lovable-uploads/c68e1b48-2149-43a9-9b9f-f441dd292ac0.png",
-          votes: 1567,
-          incumbent: true
-        },
-        {
-          id: `${ward}_candidate_3`,
-          name: "Ben Mbayo",
-          position: "Councillor Candidate",
-          party: "Richfield Cape Town Campus C",
-          experience: "Social worker, 3 years community activism, local business development coordinator",
-          manifesto: "Focus on social services, community upliftment programs, and participatory governance",
-          avatar: "/lovable-uploads/d0674897-abc6-478c-9d32-bbaa439ced68.png",
-          votes: 987,
-          incumbent: false
-        }
-      ],
+      candidates: realSACandidates.municipal.wardCouncillor,
       timeRemaining: "18 days remaining", 
-      totalVotes: 2812,
+      totalVotes: realSACandidates.municipal.wardCouncillor.reduce((sum, c) => sum + c.votes, 0),
       active: true,
       createdAt: new Date().toISOString()
     });
@@ -442,10 +342,11 @@ const Index = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-trust">
-      <CivicHeader user={user} notifications={3} onLogout={handleLogout} />
-      
-      <main className="container mx-auto px-4 py-8 space-y-8">
+    <ScrollArea className="h-screen">
+      <div className="min-h-screen bg-gradient-trust">
+        <CivicHeader user={user} notifications={3} onLogout={handleLogout} />
+        
+        <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Hero Section */}
         <section className="relative overflow-hidden rounded-2xl bg-gradient-civic shadow-civic">
           <div className="absolute inset-0">
@@ -643,6 +544,7 @@ const Index = () => {
         </section>
       </main>
     </div>
+    </ScrollArea>
   );
 };
 
